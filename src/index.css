@@ -1,0 +1,36 @@
+/* Basic styling */
+
+:root {
+    /* Colors */
+    --black: #09090c;
+    --grey: #a4b2bc;
+    --white: #fafafb;
+    --background: #d3e0fb;
+    --dark: #1a3353;
+    --peach: #ff6b72;
+    --seddlegray: #72849a;
+    --approvegreen: #04d182;
+    --blue: #5792f6;
+    --teal: #29d895;
+}
+
+/*html {*/
+/*    overflow: hidden;*/
+/*}*/
+
+/**,*/
+/**::before,*/
+/**::after {*/
+/*    margin: 0;*/
+/*    padding: 0;*/
+/*    box-sizing: border-box;*/
+/*}*/
+
+body {
+    background-color: #cccccc;
+    /*font-family: "Poppins", sans-serif;*/
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
