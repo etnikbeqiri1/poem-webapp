@@ -15,6 +15,7 @@ import styled from "styled-components";
 import {createTheme, ThemeProvider} from "@mui/material";
 import Profile from "./pages/Profile";
 import {useAuth} from "./hooks/useAuth";
+import ProfilePage from "./pages/ProfilePage";
 
 const Pages = styled.div`
   h1 {
@@ -26,14 +27,19 @@ const themeMui = createTheme({
     palette: {
         type: 'dark',
         primary: {
-            main: '#30BC72',
-            contrastText: 'rgba(255,255,255,0.87)',
+            // main: '#707ac2',
+            main: '#1a3353',
+            contrastText: 'rgba(32,36,37,0.87)',
         },
         secondary: {
-            main: '#CCCCCC',
+            // main: '#4155a2',
+            main: '#006064',
+        },
+        superwhite: {
+            main: '#fafafb',
         },
         background: {
-            default: '#d3e0fb',
+            default: '#E0F7FA',
         },
         error: {
             main: '#F6406C',
@@ -64,6 +70,9 @@ const App = () => {
                       </PrivateRoute>
                       <PrivateRoute exact path='/profile'>
                             <Profile />
+                      </PrivateRoute>
+                      <PrivateRoute exact path='/profilePage'>
+                            <ProfilePage />
                       </PrivateRoute>
 
 

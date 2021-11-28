@@ -63,6 +63,22 @@ const Profile= () => {
                                 </div>
                             </div>
 
+                            <TextField id="first_name"
+                                       label={"Name"}
+                                       variant="outlined"
+                                       fullWidth
+                                       name={"firstName"}
+                                       color={"secondary"}
+                            />
+
+                            <TextField id="first_name"
+                                       label={"User"}
+                                       variant="outlined"
+                                       fullWidth
+                                       name={"firstName"}
+                                       color={"primary"}
+                            />
+
                             <div className={"w-full"}>
                                 <div className={""}>
                                     <p className={"font-light capitalize ml-2 text-sm opacity-40"}>Last Login</p>

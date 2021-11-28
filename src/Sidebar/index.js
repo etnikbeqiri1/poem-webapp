@@ -287,6 +287,15 @@ const Sidebar = () => {
                   <img src={ProfileUserIcon} alt="Profile" />
                   <Text clicked={click}>Profile</Text>
                 </Item>
+
+                <Item
+                    onClick={() => setClick(false)}
+                    activeClassName="active"
+                    to="/profilePage"
+                >
+                  <img src={ProfileUserIcon} alt="ProfilePage" />
+                  <Text clicked={click}>Profile</Text>
+                </Item>
                 {/*<Item*/}
                 {/*  onClick={() => setClick(false)}*/}
                 {/*  activeClassName="active"*/}

@@ -7,6 +7,7 @@ module.exports = {
       'primary': '#C5CAE9',
       'secondary': '#9FA8DA',
       'trenary': '#c9cfe8',
+      'superwhite': '#fafafb',
       'danger': '#C2185B',
     }),
         variants: {
