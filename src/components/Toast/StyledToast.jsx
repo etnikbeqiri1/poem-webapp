@@ -3,12 +3,12 @@ import { ToastContainer } from 'react-toastify';
 
 const StyledToast = styled(ToastContainer)`
   .Toastify__toast {
-    border-radius: 0;
+    border-radius: 14px;
   }
 
   .Toastify__toast--default {
-    background-color: ${(props) => props.theme.colors.white};
-    color: ${(props) => props.theme.colors.mintwhite};
+    background-color: #f3f3f3;
+    color: #342143;
   }
 
   .Toastify__close-button--default {
@@ -17,7 +17,7 @@ const StyledToast = styled(ToastContainer)`
   }
 
   .Toastify__progress-bar--default {
-    background: ${(props) => props.theme.colors.dark};
+    background: #803bec;
   }
 
   .Toastify__toast--error {

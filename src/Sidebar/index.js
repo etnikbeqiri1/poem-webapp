@@ -5,14 +5,17 @@ import logo from "../assets/logo.svg";
 import Home from "../assets/home-solid.svg";
 import Team from "../assets/social.svg";
 import ProfileUserIcon from "../assets/settings.svg";
+import PlusIcon from "../assets/Plus.svg";
+import BoxIcon from "../assets/Box.svg";
+
 import Calender from "../assets/sceduled.svg";
 import Projects from "../assets/starred.svg";
 import Documents from "../assets/draft.svg";
 import PowerOff from "../assets/power-off-solid.svg";
 import styled from "styled-components";
-import {NavLink, useHistory, useLocation} from "react-router-dom";
+import {Link, NavLink, useHistory, useLocation} from "react-router-dom";
 import {useAuth} from "../hooks/useAuth";
-
+import firebase from "firebase/app";
 const Container = styled.div`
   position: fixed;
 
@@ -279,21 +282,24 @@ const Sidebar = () => {
                   <img src={Team} alt="Team" />
                   <Text clicked={click}>Team</Text>
                 </Item>
+
+                {/* products @todo  */}
+                <Item
+                    onClick={() => setClick(false)}
+                    activeClassName="active"
+                    to="/products"
+                >
+                  <img src={BoxIcon} alt="Products" />
+                  <Text clicked={click}>Products</Text>
+                </Item>
+
+
                 <Item
                     onClick={() => setClick(false)}
                     activeClassName="active"
                     to="/profile"
                 >
                   <img src={ProfileUserIcon} alt="Profile" />
-                  <Text clicked={click}>Profile</Text>
-                </Item>
-
-                <Item
-                    onClick={() => setClick(false)}
-                    activeClassName="active"
-                    to="/profilePage"
-                >
-                  <img src={ProfileUserIcon} alt="ProfilePage" />
                   <Text clicked={click}>Profile</Text>
                 </Item>
                 {/*<Item*/}
@@ -325,13 +331,13 @@ const Sidebar = () => {
               <Profile clicked={profileClick}>
                 <img
                   onClick={() => handleProfileClick()}
-                  src="https://picsum.photos/200"
+                  src={firebase.auth().currentUser?.photoURL}
                   alt="Profile"
                 />
                 <Details clicked={profileClick}>
                   <Name>
                     <h4><pre>{auth.user.displayName}</pre></h4>
-                    <a href="/#">view&nbsp;profile</a>
+                    <Link to="/profile">view&nbsp;profile</Link>
                   </Name>
 
                   <Logout>

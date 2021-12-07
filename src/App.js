@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 
 import Layout from './components/Layout/Layout';
 import Signup from './components/Auth/Signup';
@@ -16,6 +16,8 @@ import {createTheme, ThemeProvider} from "@mui/material";
 import Profile from "./pages/Profile";
 import {useAuth} from "./hooks/useAuth";
 import ProfilePage from "./pages/ProfilePage";
+import Products from "./pages/Products";
+import AddProduct from "./pages/AddProduct";
 
 const Pages = styled.div`
   h1 {
@@ -52,53 +54,56 @@ const themeMui = createTheme({
 
 const App = () => {
     const auth = useAuth();
-  return (
-      <ThemeProvider theme={themeMui}>
-        <Router>
-            {auth.user && (
-            <Sidebar  />
-            )}
+    return (
+        <ThemeProvider theme={themeMui}>
+            <Router>
+                {auth.user && (
+                    <Sidebar/>
+                )}
 
-            <Pages>
-                <Layout>
-                    <Switch>
-                      <PrivateRoute exact path='/'>
-                          <Dashboard  />
-                      </PrivateRoute>
-                      <PrivateRoute exact path='/team'>
-                            <Home />
-                      </PrivateRoute>
-                      <PrivateRoute exact path='/profile'>
-                            <Profile />
-                      </PrivateRoute>
-                      <PrivateRoute exact path='/profilePage'>
-                            <ProfilePage />
-                      </PrivateRoute>
+                <Pages>
+                    <Layout>
+                        <Switch>
+                            <PrivateRoute exact path='/'>
+                                <Dashboard/>
+                            </PrivateRoute>
+                            <PrivateRoute exact path='/team'>
+                                <Home/>
+                            </PrivateRoute>
+                            <PrivateRoute exact path='/profile'>
+                                <ProfilePage/>
+                            </PrivateRoute>
+                            <PrivateRoute exact path='/products'>
+                                <Products />
+                            </PrivateRoute>
+                            <PrivateRoute exact path='/product/add'>
+                                <AddProduct />
+                            </PrivateRoute>
 
 
-                      <Route path='/signup' >
-                        <Signup />
-                      </Route>
-                      <Route path='/login'>
-                        <Login />
-                      </Route>
-                      <Route path='/forgot-password'>
-                        <ForgotPassword />
-                      </Route>
-                      <Route path='/reset-password'>
-                        <ResetPassword />
-                      </Route>
-                      <Route>
-                        <NotFound />
-                      </Route>
+                            <Route path='/signup'>
+                                <Signup/>
+                            </Route>
+                            <Route path='/login'>
+                                <Login/>
+                            </Route>
+                            <Route path='/forgot-password'>
+                                <ForgotPassword/>
+                            </Route>
+                            <Route path='/reset-password'>
+                                <ResetPassword/>
+                            </Route>
+                            <Route>
+                                <NotFound/>
+                            </Route>
 
-                    </Switch>
-                </Layout>
-            </Pages>
+                        </Switch>
+                    </Layout>
+                </Pages>
 
-        </Router>
-      </ThemeProvider>
-  );
+            </Router>
+        </ThemeProvider>
+    );
 };
 
 export default App;
