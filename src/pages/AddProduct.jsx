@@ -24,6 +24,8 @@ import * as profileHelper from "../helpers/requests/profile";
 import {toast} from "react-toastify";
 import * as yup from "yup";
 import {addProduct} from "../helpers/requests/product";
+import {FieldArray, Form, Formik, getIn} from "formik";
+
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 const ibanRegExp = /^([A-Z]{2}[ \-]?[0-9]{2})(?=(?:[ \-]?[A-Z0-9]){9,30}$)((?:[ \-]?[A-Z0-9]{3,5}){2,7})([ \-]?[A-Z0-9]{1,3})?$/
@@ -44,16 +46,6 @@ const validationSchema = yup.object({
 export default function AddProduct() {
 
     const [hasVariants, setHasVariants] = useState(false);
-    const [variants, setVariants] = useState([{
-        "id": 1,
-        "selected_variant": "name",
-        "name": "test",
-        "size": "",
-        "color": "",
-        "gender": "",
-        "price": 0,
-        "stock": 0,
-    }]);
     const [category, setCategory] = React.useState([]);
     const [catID, setCatID] = React.useState("1");
     const [variantType, setVariantType] = React.useState("name");
@@ -77,380 +69,455 @@ export default function AddProduct() {
     const handleSizeChange = (event) => {
         setSizeSelected(event.target.value);
     };
-    const handleVariantClick = () => {
-        let temp = [...variants]
-        console.log(temp)
-        let data = {
-            "id": temp.length + 1,
-            "selected_variant": "name",
-            "name": "test2",
-            "size": "",
-            "color": "",
-            "gender": "",
-            "price": 0,
-            "stock": 0,
-        }
-        temp.push(data);
-        setVariants([...temp])
 
-    };
 
-    const formik = useFormik({
-        initialValues: {
-            "name": "",
-            "description": "",
-            "price": "",
-            "stock": "",
-            "hasVariants": "",
-        },
-        validationSchema: validationSchema,
-        onSubmit: async (values) => {
-            let data = values;
-            data.hasVariants = hasVariants;
-            data.category = catID;
-            let res = null;
-            if (!hasVariants) {
-                res = await addProduct(data);
-            } else {
-                data.variants = variants
-                res = await addProduct(data);
-            }
-
-            const keys = Object.keys(variants);
-            console.log(keys);
-
-            console.log(res)
-            toast("data " + res)
-
-        },
-    });
+    // const formik = useFormik({
+    //     initialValues: {
+    //         "name": "",
+    //         "description": "",
+    //         "price": "",
+    //         "stock": "",
+    //         "hasVariants": "",
+    //         variants: [],
+    //     },
+    //     validationSchema: validationSchema,
+    //     onSubmit: async (values) => {
+    //         let data = values;
+    //         data.hasVariants = hasVariants;
+    //         data.category = catID;
+    //         let res = null;
+    //         if (!hasVariants) {
+    //             res = await addProduct(data);
+    //         } else {
+    //             data.variants = variants
+    //             res = await addProduct(data);
+    //         }
+    //
+    //         const keys = Object.keys(variants);
+    //         console.log(keys);
+    //
+    //         console.log(res)
+    //         toast("data " + res)
+    //
+    //     },
+    // });
 
     return (
         <Grid>
-            <form onSubmit={formik.handleSubmit}>
-                <Box
-                    mt={2}
-                    display={'flex'}
-                    justifyContent={'right'}
-                >
-                    <Button
-                        variant="outlined"
-                        color="primary"
-                        type="submit"
-                        onClick={formik.handleSubmit}
-                        startIcon={<SaveIcon/>}
-                    >
-                        {'Save'}
-                    </Button>
-                </Box>
-                <Grid pt={2} pb={8} sx={{flexGrow: 1, flexWrap: 1}}>
-                    <Grid container spacing={4}>
-                        <Grid item xs={6}>
-                            <Card variant="outlined">
-                                <Grid display={'flex'}
-                                      flexDirection={'column'}
-                                      alignItems={'stretch'}
-                                      p={2}
-                                >
-                                    <Grid m={1} xs={12}
-                                          align={'center'}
-                                    >
-                                        <Avatar
-                                            alt="Remy Sharp"
-                                            // variant="square"
-                                            // borderRadius={2}
-                                            src="https://picsum.photos/800"
-                                            sx={{width: 100, height: 100}}
-                                        />
-                                    </Grid>
-                                    <Grid m={1} xs={10}>
-                                        <TextField
-                                            id="name"
-                                            label="Product Name"
-                                            color={'primary'}
-                                            fullWidth
-                                            name={"name"}
-                                            value={formik.values.name}
-                                            onChange={formik.handleChange}
-                                            error={formik.touched.name && Boolean(formik.errors.name)}
-                                            helperText={formik.touched.name && formik.errors.name}
-                                        />
-                                    </Grid>
-                                    <Grid m={1} xs={10}>
-                                        <Select
-                                            labelId="test"
-                                            id="test"
-                                            value={catID}
-                                            onChange={handleCategoryChange}
-                                            label="Country"
-                                            fullWidth
-                                            color={"primary"}
-
-                                        >
-                                            {category.map((cat, index) => (
-                                                <MenuItem value={cat.id}>{cat.name}</MenuItem>
-                                            ))}
-                                        </Select>
-                                    </Grid>
-                                    <Grid m={1} xs={10}>
-                                        <TextField
-                                            id="description"
-                                            label="Description"
-                                            fullWidth
-                                            name={"description"}
-                                            multiline
-                                            rows={3}
-                                            value={formik.values.description}
-                                            onChange={formik.handleChange}
-                                            error={formik.touched.description && Boolean(formik.errors.description)}
-                                            helperText={formik.touched.description && formik.errors.description}
-                                        />
-                                    </Grid>
-                                    <Grid m={1} xs={10}>
-                                        <FormControlLabel
-                                            value="start"
-                                            control={
-                                                <Switch
-                                                    aria-label={"switch"}
-                                                    value={hasVariants}
-                                                    color="primary"
-                                                    onChange={handleVariantChange}
-                                                />
-                                            }
-                                            label="Has Variants"
-                                            labelPlacement="has_variants"
-                                        />
-
-                                    </Grid>
-                                    <Grid m={1}>
-                                        {hasVariants ? (
-                                            <></>
-                                        ) : (
-                                            <>
-                                                <Grid m={1} xs={4}>
-                                                    <TextField
-                                                        id="price"
-                                                        label="Price per Item"
-                                                        color={'primary'}
-                                                        fullWidth
-                                                        type={'number'}
-                                                        name={"price"}
-                                                        value={formik.values.price}
-                                                        onChange={formik.handleChange}
-                                                        error={formik.touched.price && Boolean(formik.errors.price)}
-                                                        helperText={formik.touched.price && formik.errors.price}
-
-                                                    />
-                                                </Grid>
-                                                <Grid m={1} xs={4}
-                                                      display={'flex'}
-                                                      alignItems={'center'}
-                                                >
-                                                    <Box>
-                                                        <TextField
-                                                            id="stock"
-                                                            label="Stock"
-                                                            color={'primary'}
-                                                            fullWidth
-                                                            type={'number'}
-                                                            name={"stock"}
-                                                            value={formik.values.stock}
-                                                            onChange={formik.handleChange}
-                                                            error={formik.touched.stock && Boolean(formik.errors.stock)}
-                                                            helperText={formik.touched.stock && formik.errors.stock}
-                                                        />
-                                                    </Box>
-                                                    <Box pl={1}>
-                                                        <Button variant={'outlined'} color={'primary'}>Max</Button>
-                                                    </Box>
-                                                </Grid>
-
-                                            </>
-                                        )}
-                                    </Grid>
-                                </Grid>
-                            </Card>
-                        </Grid>
-                        {hasVariants ? (
-                            <>
+            <Formik
+                initialValues={{
+                    name: "",
+                    category: catID,
+                    hasVariants: hasVariants,
+                    description: "",
+                    price: 0,
+                    stock: 0,
+                    variants: [
+                        {
+                            selected_variant: "name",
+                            name: "",
+                            price: 0,
+                            stock: 0,
+                            size: "",
+                            color: "",
+                            gender: "",
+                        }
+                    ]
+                }}
+                validationSchema={validationSchema}
+                onSubmit={values => {
+                    values.category = catID;
+                    values.hasVariants = hasVariants;
+                    console.log("onSubmit", JSON.stringify(values, null, 2));
+                }}
+            >
+                {({values, touched, errors, handleChange, handleBlur, isValid}) => (
+                    <Form noValidate autoComplete="off">
+                        <Box
+                            mt={2}
+                            display={'flex'}
+                            justifyContent={'right'}
+                        >
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                type="submit"
+                                // onClick={formik.handleSubmit}
+                                startIcon={<SaveIcon/>}
+                            >
+                                {'Save'}
+                            </Button>
+                        </Box>
+                        <Grid pt={2} pb={8} sx={{flexGrow: 1, flexWrap: 1}}>
+                            <Grid container spacing={4}>
                                 <Grid item xs={6}>
-                                    <Grid>
-                                        <Card variant="outlined">
-                                            <Grid display={'flex'}
-                                                  flexDirection={'column'}
-                                                  alignItems={'stretch'}
-                                                  p={2}
+                                    <Card variant="outlined">
+                                        <Grid display={'flex'}
+                                              flexDirection={'column'}
+                                              alignItems={'stretch'}
+                                              p={2}
+                                        >
+                                            <Grid m={1} xs={12}
+                                                  align={'center'}
                                             >
-                                                <Grid xs={12}>
-                                                    <Typography variant='text' align='center'>Select Variant
-                                                        Types</Typography>
-                                                </Grid>
-                                                <Grid m={1} xs={8}>
-                                                    <Select
-                                                        labelId="variantType"
-                                                        id="variantType"
-                                                        value={variantType}
-                                                        onChange={handleVariantTypeChange}
-                                                        label="variantType"
-                                                        fullWidth
-                                                        color={"primary"}
-                                                    >
-                                                        <MenuItem value={'name'}>By Name</MenuItem>
-                                                        <MenuItem value={'size'}>By Size</MenuItem>
-                                                        <MenuItem value={'color'}>By Color</MenuItem>
-                                                        <MenuItem value={'gender'}>By Gender</MenuItem>
-                                                    </Select>
-                                                </Grid>
+                                                <Avatar
+                                                    alt="Remy Sharp"
+                                                    // variant="square"
+                                                    // borderRadius={2}
+                                                    src="https://picsum.photos/800"
+                                                    sx={{width: 100, height: 100}}
+                                                />
                                             </Grid>
-                                        </Card>
-                                    </Grid>
-                                    {variants.map((row, index) => (
-                                        <Grid pt={1}>
-                                            <Card mt={3} variant="outlined">
-                                                <Grid display={'flex'}
-                                                      flexDirection={'column'}
-                                                      alignItems={'stretch'}
-                                                      p={2}
+                                            <Grid m={1} xs={10}>
+                                                <TextField
+                                                    id="name"
+                                                    label="Product Name"
+                                                    color={'primary'}
+                                                    fullWidth
+                                                    name={"name"}
+                                                    value={values.name}
+                                                    onChange={handleChange}
+                                                    error={touched.name && Boolean(errors.name)}
+                                                    helperText={touched.name && errors.name}
+                                                />
+                                            </Grid>
+                                            <Grid m={1} xs={10}>
+                                                <Select
+                                                    labelId="test"
+                                                    id="test"
+                                                    value={catID}
+                                                    onChange={handleCategoryChange}
+                                                    label="Country"
+                                                    fullWidth
+                                                    color={"primary"}
+
                                                 >
-                                                    <Grid
-                                                        xs={12}
-                                                        display={'flex'}
-                                                        alignItems={'center'}
-                                                        alignSelf={'center'}
-                                                        flexDirection={'row'}
-                                                        justifyContent={'space-around'}
-                                                    >
-                                                        <Box>
-                                                            <Typography variant='text'
-                                                                        align='center'>Variant {row.id}</Typography>
-                                                        </Box>
-
-                                                        <Box>
-                                                            <Tooltip title="Delete">
-                                                                <IconButton>
-                                                                    <DeleteIcon color={'primary'}/>
-                                                                </IconButton>
-                                                            </Tooltip>
-                                                        </Box>
-                                                    </Grid>
-
-                                                    {variantType === "name" ? (
-                                                            <>
-                                                                <Grid m={1} xs={10}>
-                                                                    <TextField
-                                                                        id="name1"
-                                                                        label="Item Variant Name"
-                                                                        color={'primary'}
-                                                                        fullWidth
-                                                                        name={"name"}
-                                                                    />
-                                                                </Grid>
-                                                            </>
-                                                        ) :
-                                                        (
-                                                            <></>
-                                                        )
-                                                    }
-                                                    {variantType === "size" ? (
-                                                            <>
-                                                                <Grid m={1} xs={6}>
-                                                                    <Select
-                                                                        labelId="size"
-                                                                        id="size"
-                                                                        value={sizeSelected}
-                                                                        onChange={handleSizeChange}
-                                                                        label="Size"
-                                                                        fullWidth
-                                                                        color={"primary"}
-
-                                                                    >
-
-                                                                        <MenuItem value={"small"}>Small</MenuItem>
-                                                                        <MenuItem value={"medium"}>Medium</MenuItem>
-                                                                        <MenuItem value={"large"}>Large</MenuItem>
-                                                                        <MenuItem value={"x-large"}>X-Large</MenuItem>
-                                                                        <MenuItem value={"2x-large"}>2X-Large</MenuItem>
-
-                                                                    </Select>
-                                                                </Grid>
-                                                            </>
-                                                        ) :
-                                                        (
-                                                            <></>
-                                                        )
-                                                    }
-                                                    {variantType === "color" ? (
-                                                            <>
-                                                                <Typography variant="text"
-                                                                            align="center"> Color < / Typography>
-                                                            </>
-                                                        ) :
-                                                        (
-                                                            <></>
-                                                        )
-                                                    }
-                                                    {variantType === "gender" ? (
-                                                            <>
-                                                                <Typography variant="text"
-                                                                            align="center"> Gender < / Typography>
-                                                            </>
-                                                        ) :
-                                                        (
-                                                            <></>
-                                                        )
-                                                    }
-
-
-                                                    <Grid m={1} xs={4}>
-                                                        <TextField
-                                                            id="price"
-                                                            label="Price per Item"
-                                                            color={'primary'}
-                                                            fullWidth
-                                                            name={"price"}
+                                                    {category.map((cat, index) => (
+                                                        <MenuItem value={cat.id}>{cat.name}</MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </Grid>
+                                            <Grid m={1} xs={10}>
+                                                <TextField
+                                                    id="description"
+                                                    label="Description"
+                                                    fullWidth
+                                                    name={"description"}
+                                                    multiline
+                                                    rows={3}
+                                                    value={values.description}
+                                                    onChange={handleChange}
+                                                    error={touched.description && Boolean(errors.description)}
+                                                    helperText={touched.description && errors.description}
+                                                />
+                                            </Grid>
+                                            <Grid m={1} xs={10}>
+                                                <FormControlLabel
+                                                    value="start"
+                                                    control={
+                                                        <Switch
+                                                            aria-label={"switch"}
+                                                            value={hasVariants}
+                                                            color="primary"
+                                                            onChange={handleVariantChange}
                                                         />
-                                                    </Grid>
-                                                    <Grid m={1} xs={4}
-                                                          display={'flex'}
-                                                          alignItems={'center'}
-                                                    >
-                                                        <Box>
+                                                    }
+                                                    label="Has Variants"
+                                                    labelPlacement="has_variants"
+                                                />
+
+                                            </Grid>
+                                            <Grid m={1}>
+                                                {hasVariants ? (
+                                                    <></>
+                                                ) : (
+                                                    <>
+                                                        <Grid m={1} xs={4}>
                                                             <TextField
-                                                                id="stock"
-                                                                label="Stock"
+                                                                id="price"
+                                                                label="Price per Item"
                                                                 color={'primary'}
                                                                 fullWidth
-                                                                name={"stock"}
-                                                            />
-                                                        </Box>
-                                                        <Box pl={1}>
-                                                            <Button variant={'outlined'} color={'primary'}>Max</Button>
-                                                        </Box>
-                                                    </Grid>
-                                                </Grid>
-                                            </Card>
-                                        </Grid>
-                                    ))}
-                                    <Grid pt={1} xs={12}>
-                                        <Grid display={'flex'}
-                                              alignItems={'center'}
-                                              alignSelf={'center'}
-                                              justifyContent={'flex-end'}
-                                        >
-                                            <Button variant='outlined' color={'primary'} onClick={handleVariantClick}>Add
-                                                Variant</Button>
-                                        </Grid>
-                                    </Grid>
-                                </Grid>
-                            </>
-                        ) : (
-                            <></>
-                        )
-                        }
+                                                                type={'number'}
+                                                                name={"price"}
+                                                                value={values.price}
+                                                                onChange={handleChange}
+                                                                error={touched.price && Boolean(errors.price)}
+                                                                helperText={touched.price && errors.price}
 
-                    </Grid>
-                </Grid>
-            </form>
+                                                            />
+                                                        </Grid>
+                                                        <Grid m={1} xs={4}
+                                                              display={'flex'}
+                                                              alignItems={'center'}
+                                                        >
+                                                            <Box>
+                                                                <TextField
+                                                                    id="stock"
+                                                                    label="Stock"
+                                                                    color={'primary'}
+                                                                    fullWidth
+                                                                    type={'number'}
+                                                                    name={"stock"}
+                                                                    value={values.stock}
+                                                                    onChange={handleChange}
+                                                                    error={touched.stock && Boolean(errors.stock)}
+                                                                    helperText={touched.stock && errors.stock}
+                                                                />
+                                                            </Box>
+                                                        </Grid>
+
+                                                    </>
+                                                )}
+                                            </Grid>
+                                        </Grid>
+                                    </Card>
+                                </Grid>
+                                {hasVariants ? (
+                                    <>
+                                        <Grid item xs={6}>
+                                            <Grid>
+                                                <Card variant="outlined">
+                                                    <Grid display={'flex'}
+                                                          flexDirection={'column'}
+                                                          alignItems={'stretch'}
+                                                          p={2}
+                                                    >
+                                                        <Grid xs={12}>
+                                                            <Typography variant='text' align='center'>Select Variant
+                                                                Types</Typography>
+                                                        </Grid>
+                                                        <Grid m={1} xs={8}>
+                                                            <Select
+                                                                labelId="variantType"
+                                                                id="variantType"
+                                                                value={variantType}
+                                                                onChange={handleVariantTypeChange}
+                                                                label="variantType"
+                                                                fullWidth
+                                                                color={"primary"}
+                                                            >
+                                                                <MenuItem value={'name'}>By Name</MenuItem>
+                                                                <MenuItem value={'size'}>By Size</MenuItem>
+                                                                <MenuItem value={'color'}>By Color</MenuItem>
+                                                                <MenuItem value={'gender'}>By Gender</MenuItem>
+                                                            </Select>
+                                                        </Grid>
+                                                    </Grid>
+                                                </Card>
+                                            </Grid>
+
+                                            <FieldArray name="variants">
+                                                {({push, remove}) => (
+                                                    <>
+                                                        {values.variants.map((vari, index) => {
+                                                            const name = `variants[${index}].name`;
+                                                            const touchedName = getIn(touched, name);
+                                                            const errorName = getIn(errors, name);
+
+                                                            const stock = `variants[${index}].stock`;
+                                                            const touchedStock = getIn(touched, stock);
+                                                            const errorStock = getIn(errors, stock);
+
+                                                            const price = `variants[${index}].price`;
+                                                            const touchedPrice = getIn(touched, price);
+                                                            const errorPrice = getIn(errors, price);
+
+                                                            vari.selected_variant = variantType;
+                                                            return (
+                                                                <div key={index}>
+                                                                    <Grid pt={1}>
+                                                                        <Card mt={3} variant="outlined">
+                                                                            <Grid display={'flex'}
+                                                                                  flexDirection={'column'}
+                                                                                  alignItems={'stretch'}
+                                                                                  p={2}
+                                                                            >
+                                                                                <Grid
+                                                                                    xs={12}
+                                                                                    display={'flex'}
+                                                                                    alignItems={'center'}
+                                                                                    alignSelf={'center'}
+                                                                                    flexDirection={'row'}
+                                                                                    justifyContent={'space-around'}
+                                                                                >
+                                                                                    <Box>
+                                                                                        <Typography variant='text'
+                                                                                                    align='center'>Variant {index + 1}</Typography>
+                                                                                    </Box>
+
+                                                                                    <Box>
+                                                                                        <Tooltip title="Delete">
+                                                                                            <IconButton>
+                                                                                                <DeleteIcon
+                                                                                                    onClick={() => remove(index)}
+                                                                                                    color={'primary'}/>
+                                                                                            </IconButton>
+                                                                                        </Tooltip>
+                                                                                    </Box>
+                                                                                </Grid>
+
+                                                                                {variantType === "name" ? (
+                                                                                        <>
+                                                                                            <Grid m={1} xs={10}>
+                                                                                                <TextField
+                                                                                                    id="name1"
+                                                                                                    label="Item Variant Name"
+                                                                                                    color={'primary'}
+                                                                                                    fullWidth
+                                                                                                    name={name}
+                                                                                                    value={vari.name}
+                                                                                                    required
+                                                                                                    helperText={
+                                                                                                        touchedName && errorName
+                                                                                                            ? errorName
+                                                                                                            : ""
+                                                                                                    }
+                                                                                                    error={Boolean(touchedName && errorName)}
+                                                                                                    onChange={handleChange}
+                                                                                                    onBlur={handleBlur}
+                                                                                                />
+                                                                                            </Grid>
+                                                                                        </>
+                                                                                    ) :
+                                                                                    (
+                                                                                        <></>
+                                                                                    )
+                                                                                }
+                                                                                {variantType === "size" ? (
+                                                                                        <>
+                                                                                            <Grid m={1} xs={6}>
+                                                                                                <Select
+                                                                                                    labelId="size"
+                                                                                                    id="size"
+                                                                                                    value={sizeSelected}
+                                                                                                    onChange={handleSizeChange}
+                                                                                                    label="Size"
+                                                                                                    fullWidth
+                                                                                                    color={"primary"}
+
+                                                                                                >
+
+                                                                                                    <MenuItem
+                                                                                                        value={"small"}>Small</MenuItem>
+                                                                                                    <MenuItem
+                                                                                                        value={"medium"}>Medium</MenuItem>
+                                                                                                    <MenuItem
+                                                                                                        value={"large"}>Large</MenuItem>
+                                                                                                    <MenuItem
+                                                                                                        value={"x-large"}>X-Large</MenuItem>
+                                                                                                    <MenuItem
+                                                                                                        value={"2x-large"}>2X-Large</MenuItem>
+
+                                                                                                </Select>
+                                                                                            </Grid>
+                                                                                        </>
+                                                                                    ) :
+                                                                                    (
+                                                                                        <></>
+                                                                                    )
+                                                                                }
+                                                                                {variantType === "color" ? (
+                                                                                        <>
+                                                                                            <Typography variant="text"
+                                                                                                        align="center"> Color < / Typography>
+                                                                                        </>
+                                                                                    ) :
+                                                                                    (
+                                                                                        <></>
+                                                                                    )
+                                                                                }
+                                                                                {variantType === "gender" ? (
+                                                                                        <>
+                                                                                            <Typography variant="text"
+                                                                                                        align="center"> Gender < / Typography>
+                                                                                        </>
+                                                                                    ) :
+                                                                                    (
+                                                                                        <></>
+                                                                                    )
+                                                                                }
+
+
+                                                                                <Grid m={1} xs={4}>
+                                                                                    <TextField
+                                                                                        id="price"
+                                                                                        label="Price per Item"
+                                                                                        color={'primary'}
+                                                                                        fullWidth
+                                                                                        name={price}
+                                                                                        value={vari.price}
+                                                                                        required
+                                                                                        helperText={
+                                                                                            touchedPrice && errorPrice
+                                                                                                ? errorPrice
+                                                                                                : ""
+                                                                                        }
+                                                                                        error={Boolean(touchedPrice && errorPrice)}
+                                                                                        onChange={handleChange}
+                                                                                        onBlur={handleBlur}
+                                                                                    />
+                                                                                </Grid>
+                                                                                <Grid m={1} xs={4}
+                                                                                      display={'flex'}
+                                                                                      alignItems={'center'}
+                                                                                >
+                                                                                    <Box>
+                                                                                        <TextField
+                                                                                            id="stock"
+                                                                                            label="Stock"
+                                                                                            color={'primary'}
+                                                                                            fullWidth
+                                                                                            name={stock}
+                                                                                            value={vari.stock}
+                                                                                            required
+                                                                                            helperText={
+                                                                                                touchedStock && errorStock
+                                                                                                    ? errorStock
+                                                                                                    : ""
+                                                                                            }
+                                                                                            error={Boolean(touchedStock && errorStock)}
+                                                                                            onChange={handleChange}
+                                                                                            onBlur={handleBlur}
+                                                                                        />
+                                                                                    </Box>
+                                                                                </Grid>
+                                                                            </Grid>
+                                                                        </Card>
+                                                                    </Grid>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                        <Grid pt={1} xs={12}>
+                                                            <Grid display={'flex'}
+                                                                  alignItems={'center'}
+                                                                  alignSelf={'center'}
+                                                                  justifyContent={'flex-end'}
+                                                            >
+                                                                <Button variant='outlined' color={'primary'}
+                                                                        onClick={() =>
+                                                                            push({ name: "", stock: 0 , price: 0 })
+                                                                        }>Add
+                                                                    Variant</Button>
+                                                            </Grid>
+                                                        </Grid>
+                                                    </>
+
+                                                )}
+                                            </FieldArray>
+
+                                        </Grid>
+                                    </>
+                                ) : (
+                                    <></>
+                                )
+                                }
+
+                            </Grid>
+                        </Grid>
+                    </Form>
+                )}
+            </Formik>
         </Grid>
     );
 }
