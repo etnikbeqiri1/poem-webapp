@@ -18,6 +18,7 @@ import {useAuth} from "./hooks/useAuth";
 import ProfilePage from "./pages/ProfilePage";
 import Products from "./pages/Products";
 import AddProduct from "./pages/AddProduct";
+import EditProduct from "./pages/EditProduct";
 
 const Pages = styled.div`
   h1 {
@@ -78,6 +79,9 @@ const App = () => {
                             </PrivateRoute>
                             <PrivateRoute exact path='/product/add'>
                                 <AddProduct />
+                            </PrivateRoute>
+                            <PrivateRoute exact path='/product/edit/:id'>
+                                <EditProduct />
                             </PrivateRoute>
 
 

@@ -70,15 +70,21 @@ export default function VariantComponent(props) {
                             <>
                                 <Grid m={1} xs={6}>
                                     <FormControl fullWidth>
-                                        <InputLabel id="size">
-                                            Size
-                                        </InputLabel>
-
-                                        <Select
+                                        <TextField
+                                            select
                                             labelId="size"
                                             id="size"
-                                            value={props.value}
-                                            onChange={props.onChange1}
+                                            name={props.size}
+                                            value={props.vari.size}
+                                            required
+                                            helperText={
+                                                props.touchedSize && props.errorSize
+                                                    ? props.errorSize
+                                                    : ""
+                                            }
+                                            error={Boolean(props.touchedSize && props.errorSize)}
+                                            onChange={props.onChange}
+                                            onBlur={props.onBlur}
                                             label="Size"
                                             fullWidth
                                             color={"primary"}
@@ -96,7 +102,7 @@ export default function VariantComponent(props) {
                                             <MenuItem
                                                 value={"2x-large"}>2X-Large</MenuItem>
 
-                                        </Select>
+                                        </TextField>
                                     </FormControl>
                                 </Grid>
                             </>
@@ -107,8 +113,25 @@ export default function VariantComponent(props) {
                     }
                     {props.variantType === "color" ? (
                             <>
-                                <Typography variant="text"
-                                            align="center"> Color < / Typography>
+                                <Grid m={1} xs={12}>
+                                    <TextField
+                                        id="name1"
+                                        label="Variant Color"
+                                        color={"primary"}
+                                        fullWidth
+                                        name={props.color}
+                                        value={props.vari.color}
+                                        required
+                                        helperText={
+                                            props.touchedColor && props.errorColor
+                                                ? props.errorColor
+                                                : ""
+                                        }
+                                        error={Boolean(props.touchedColor && props.errorColor)}
+                                        onChange={props.onChange}
+                                        onBlur={props.onBlur}
+                                    />
+                                </Grid>
                             </>
                         ) :
                         (
@@ -117,8 +140,44 @@ export default function VariantComponent(props) {
                     }
                     {props.variantType === "gender" ? (
                             <>
-                                <Typography variant="text"
-                                            align="center"> Gender < / Typography>
+                                <Grid m={1} xs={6}>
+                                    <FormControl fullWidth>
+                                        <TextField
+                                            select
+                                            labelId="Gender"
+                                            id="gender"
+                                            name={props.gender}
+                                            value={props.vari.gender}
+                                            required
+                                            helperText={
+                                                props.touchedGender && props.errorGender
+                                                    ? props.errorGender
+                                                    : ""
+                                            }
+                                            error={Boolean(props.touchedGender && props.errorGender)}
+                                            onChange={props.onChange}
+                                            onBlur={props.onBlur}
+                                            label="Gender"
+                                            fullWidth
+                                            color={"primary"}
+
+                                        >
+
+                                            <MenuItem
+                                                value={"male"}>
+                                                Male
+                                            </MenuItem>
+                                            <MenuItem
+                                                value={"female"}>
+                                                Female
+                                            </MenuItem>
+                                            <MenuItem value={"unisex"}>
+                                                Unisex
+                                            </MenuItem>
+
+                                        </TextField>
+                                    </FormControl>
+                                </Grid>
                             </>
                         ) :
                         (
@@ -141,6 +200,7 @@ export default function VariantComponent(props) {
                                         ? props.errorPrice
                                         : ""
                                 }
+                                type="number"
                                 error={Boolean(props.touchedPrice && props.errorPrice)}
                                 onChange={props.onChange}
                                 onBlur={props.onBlur}
@@ -156,6 +216,7 @@ export default function VariantComponent(props) {
                                     name={props.name2}
                                     value={props.vari.stock}
                                     required
+                                    type="number"
                                     helperText={
                                         props.touchedStock && props.errorStock
                                             ? props.errorStock
@@ -191,5 +252,14 @@ VariantComponent.propTypes = {
     errorPrice: PropTypes.any,
     name2: PropTypes.string,
     touchedStock: PropTypes.any,
-    errorStock: PropTypes.any
+    errorStock: PropTypes.any,
+    size: PropTypes.string,
+    touchedSize: PropTypes.any,
+    errorSize: PropTypes.any,
+    color: PropTypes.string,
+    touchedColor: PropTypes.any,
+    errorColor: PropTypes.any,
+    gender: PropTypes.string,
+    touchedGender: PropTypes.any,
+    errorGender: PropTypes.any,
 };

@@ -12,6 +12,7 @@ export default function NoVariantsComponent(props) {
                 label="Price per Item"
                 color={"primary"}
                 fullWidth
+                required
                 type={"number"}
                 name={"price"}
                 value={props.values.price}
@@ -28,6 +29,7 @@ export default function NoVariantsComponent(props) {
                     label="Stock"
                     color={"primary"}
                     fullWidth
+                    required
                     type={"number"}
                     name={"stock"}
                     value={props.values.stock}

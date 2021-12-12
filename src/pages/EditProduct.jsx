@@ -13,7 +13,7 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import * as React from "react";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import Typography from "@mui/material/Typography";
 import {getCategories} from "../helpers/requests/category";
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -23,7 +23,7 @@ import {useFormik} from "formik";
 import * as profileHelper from "../helpers/requests/profile";
 import {toast} from "react-toastify";
 import * as yup from "yup";
-import {addProduct} from "../helpers/requests/product";
+import {addProduct, editProduct, findProductByID} from "../helpers/requests/product";
 import {FieldArray, Form, Formik, getIn} from "formik";
 import * as PropTypes from "prop-types";
 import VariantComponent from "../components/VariantComponent/VariantComponent";
@@ -31,7 +31,7 @@ import AddVariantComponent from "../components/AddVariantComponent/AddVariantCom
 import NoVariantsComponent from "../components/NoVariantsComponent/NoVariantsComponent";
 import firebase from "firebase";
 import {LoadingButton} from "@mui/lab";
-import {useHistory} from "react-router-dom";
+import {useHistory, useParams} from "react-router-dom";
 
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
@@ -50,20 +50,59 @@ const validationSchema = yup.object({
 }).defined();
 
 
-export default function AddProduct() {
-
+export default function EditProduct(props) {
     const [hasVariants, setHasVariants] = useState(false);
     const [category, setCategory] = React.useState([]);
     const [catID, setCatID] = React.useState("1");
     const [variantType, setVariantType] = React.useState("name");
     const [sizeSelected, setSizeSelected] = React.useState("s");
     const [loading, setLoading] = React.useState(false);
+    const [dataSourceEditState, setSourceEditState] = React.useState({
+        name: "",
+        category: 1,
+        hasVariants: hasVariants,
+        description: "",
+        price: 0,
+        stock: 0,
+        variants: [
+            {
+                selected_variant: "name",
+                name: "",
+                price: 0,
+                stock: 0,
+                size: "",
+                color: "",
+                gender: "",
+            }
+        ]
+    });
 
     let history = useHistory();
 
     const [photoURL, setPhotoURL] = useState("https://socialistmodernism.com/wp-content/uploads/2017/07/placeholder-image.png?w=640");
     const [imageUploading, setImageUploading] = useState(false);
 
+    const { id } = useParams();
+
+    useEffect(async () => {
+        setLoading(true);
+        let data = {
+            id: parseInt(id)
+        }
+        let res = await findProductByID(data);
+        console.log(res.data)
+        setSourceEditState(res.data)
+        setCatID(res.data.category_id)
+        setHasVariants(res.data.hasVariants)
+        setPhotoURL(res.data.photo)
+
+        res.data.variants.map((variant) => {
+            console.log(variant.selected_variant)
+            setVariantType(variant.selected_variant);
+        })
+
+        setLoading(false)
+    },[])
 
     const onImageChange = (event) => {
         if (event.target.files && event.target.files[0]) {
@@ -103,35 +142,17 @@ export default function AddProduct() {
     return (
         <Grid>
             <Formik
-                initialValues={{
-                    name: "",
-                    category: 1,
-                    hasVariants: hasVariants,
-                    description: "",
-                    price: 0,
-                    stock: 0,
-                    variants: [
-                        {
-                            selected_variant: "name",
-                            name: "",
-                            price: 0,
-                            stock: 0,
-                            size: "",
-                            color: "",
-                            gender: "",
-                        }
-                    ]
-                }}
+                enableReinitialize={true}
+                initialValues={dataSourceEditState}
                 validationSchema={validationSchema}
                 onSubmit={async values => {
                     setLoading(true);
                     values.category = parseInt(catID);
                     values.hasVariants = hasVariants;
                     values.photo = photoURL;
-                    let res = await addProduct(values)
+                    let res = await editProduct(values)
                     setLoading(false);
                     toast(res.info.message)
-                    // console.log("onSubmit", JSON.stringify(res.data, null, 2));
                     history.push('/products')
                 }}
             >
@@ -152,14 +173,13 @@ export default function AddProduct() {
                                 {loading ?
                                     'Loading'
                                     :
-                                    'Save'
+                                    'Save Changes'
                                 }
                             </Button>
                         </Box>
                         <Grid pt={2} pb={8} sx={{flexGrow: 1, flexWrap: 1}}>
                             <Grid container spacing={4}>
                                 <Grid item xs={6}>
-
                                     <Card variant="outlined">
                                         <img src={photoURL} alt={"product image"} style={{
                                             height: 200,
@@ -261,7 +281,6 @@ export default function AddProduct() {
                                                         />
                                                     }
                                                     label="Has Variants"
-                                                    labelPlacement="has_variants"
                                                 />
 
                                             </Grid>
@@ -347,7 +366,7 @@ export default function AddProduct() {
                                                             const touchedPrice = getIn(touched, price);
                                                             const errorPrice = getIn(errors, price);
 
-                                                            vari.selected_variant = variantType;
+                                                            vari.selected_variant = variantType
                                                             return (
                                                                 <VariantComponent key={index}
                                                                                   index={index}

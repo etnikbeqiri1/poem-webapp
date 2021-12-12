@@ -2,7 +2,7 @@ import * as React from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import {
-    alpha, Autocomplete, Button,
+    alpha, Autocomplete, Avatar, Button,
     Checkbox, Chip,
     Container,
     FormControlLabel, IconButton, Paper, SvgIcon,
@@ -58,6 +58,12 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
+    {
+        id: 'photo',
+        numeric: false,
+        disablePadding: true,
+        label: '',
+    },
     {
         id: 'name',
         numeric: false,
@@ -413,10 +419,24 @@ function Products() {
                                                         scope="row"
                                                         padding="none"
                                                     >
+                                                        <Avatar
+                                                            alt={row.name}
+                                                            src={row.photo}
+                                                            sx={{ width: 40, height: 40 }}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell
+                                                        component="th"
+                                                        id={labelId}
+                                                        scope="row"
+                                                        padding="none"
+                                                    >
                                                         {row.name}
                                                     </TableCell>
                                                     <TableCell
-                                                        align="left">{row.category?.name ? row.category.name : "none"}</TableCell>
+                                                        align="left">
+                                                        {row.category?.name ? row.category.name : "none"}
+                                                    </TableCell>
                                                     <TableCell align="left">{row.description}</TableCell>
                                                     <TableCell
                                                         align="left">
@@ -459,6 +479,9 @@ function Products() {
                                                               color="secondary"
                                                               icon={<EditOutlined/>}
                                                               clickable={true}
+                                                              onClick = {() => {
+                                                                  history.push('product/edit/'+row.id)
+                                                              }}
                                                         />
                                                     </TableCell>
                                                 </TableRow>
