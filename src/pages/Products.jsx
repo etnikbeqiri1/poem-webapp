@@ -29,7 +29,6 @@ import {getCategories} from "../helpers/requests/category";
 import {EditOutlined} from "@mui/icons-material";
 
 
-
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
         return -1;
@@ -380,6 +379,14 @@ function Products() {
                                         .map((row, index) => {
                                             const isItemSelected = isSelected(row.id);
                                             const labelId = `enhanced-table-checkbox-${index}`;
+
+                                            let variantCounter = 0;
+                                            let stockCounter = 0;
+                                            for (const obj of row.variants) {
+                                                variantCounter++;
+                                                stockCounter = stockCounter + obj.stock;
+                                            }
+
                                             return (
                                                 <TableRow
                                                     hover
@@ -412,14 +419,45 @@ function Products() {
                                                         align="left">{row.category?.name ? row.category.name : "none"}</TableCell>
                                                     <TableCell align="left">{row.description}</TableCell>
                                                     <TableCell
-                                                        align="left">{row.hasVariants ? <Chip label={"X variants"} variant="outlined" color="secondary" /> :  <Chip label={"None"} color="secondary" />}</TableCell>
-                                                    <TableCell align="right">{row.stock >= 1 ? <Chip label={row.stock+" Left"} variant="outlined" color="secondary" /> : <Chip label={"Sold Out"} color="error" />}</TableCell>
-                                                    <TableCell align="right"><Chip label={row.price+"€"} variant="outlined" color="secondary" /></TableCell>
+                                                        align="left">
+                                                        {row.hasVariants ?
+                                                            <Chip label={variantCounter + " variants"}
+                                                                  variant="outlined" color="secondary"/> :
+                                                            <Chip label={"None"} color="secondary"/>}</TableCell>
+                                                    <TableCell align="right">
+
+                                                        {(row.stock >= 1) && (!row.hasVariants) ?
+                                                            <Chip label={row.stock + " Left"} variant="outlined"
+                                                                  color="secondary"/> :
+                                                            <></>
+                                                        }
+                                                        {(row.stock <= 0) && (!row.hasVariants) ?
+                                                            <Chip label={"Sold Out"} color="error"/> :
+                                                            <></>
+                                                        }
+                                                        {(row.stock <= 0) && (row.hasVariants) ?
+                                                            <Chip label={stockCounter + " Left in Total"}
+                                                                  variant="outlined"
+                                                                  color="secondary"/> :
+                                                            <></>
+                                                        }
+
+                                                    </TableCell>
+                                                    <TableCell align="right">
+                                                        {(!row.hasVariants) ?
+                                                            <Chip label={row.price + "€"}
+                                                                  variant="outlined"
+                                                                  color="secondary"/>
+                                                            :
+                                                            <></>
+                                                        }
+
+                                                    </TableCell>
                                                     <TableCell align="right">
                                                         <Chip label="Edit"
                                                               variant="outlined"
                                                               color="secondary"
-                                                              icon={<EditOutlined />}
+                                                              icon={<EditOutlined/>}
                                                               clickable={true}
                                                         />
                                                     </TableCell>

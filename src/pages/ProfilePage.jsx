@@ -25,6 +25,7 @@ import {toast} from "react-toastify";
 import firebase from "firebase/app";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
 import {LoadingButton} from "@mui/lab";
+import ProfileDataAndImage from "../components/ProfileDataAndImage/ProfileDataAndImage";
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 const ibanRegExp = /^([A-Z]{2}[ \-]?[0-9]{2})(?=(?:[ \-]?[A-Z0-9]){9,30}$)((?:[ \-]?[A-Z0-9]{3,5}){2,7})([ \-]?[A-Z0-9]{1,3})?$/
@@ -119,52 +120,7 @@ function VerticalTabs() {
     };
 }
 
-function ProfileDataAndImage(props) {
-    return <Box
-        display="flex"
-        flexDirection="row"
-    >
-        <Box pr={2}>
-            <Avatar
-                alt="e"
-                src={firebase.auth().currentUser?.photoURL}
-                sx={{width: 70, height: 70}}
-                boxShadow="3"
-            />
-        </Box>
-        <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-        >
-            <label htmlFor="icon-button-file">
-                <input
-                    accept="image/*"
-                    id="icon-button-file"
-                    type="file"
-                    onChange={props.onChange}
-                    style={{
-                        display: "none",
-                    }}
-                />
-                <LoadingButton
-                    variant={"outlined"}
-                    aria-label="upload picture"
-                    component="span"
-                    // disabled={imageUploading}
-                    loading={props.loading}
-                >
-                    Change Image
-                </LoadingButton>
-            </label>
-        </Box>
-    </Box>;
-}
 
-ProfileDataAndImage.propTypes = {
-    onChange: PropTypes.func,
-    loading: PropTypes.bool
-};
 
 function ProfilePage() {
     const auth = useAuth();
