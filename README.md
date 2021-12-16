@@ -15,7 +15,7 @@ Products View
 ---
 Add Products View
 ***
-![add_products](https://raw.githubusercontent.com/etnikbeqiri1/poem-webapp/main/assets/add_products.png)
+![add_product](https://raw.githubusercontent.com/etnikbeqiri1/poem-webapp/main/assets/add_product.png)
 
 
 
