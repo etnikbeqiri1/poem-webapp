@@ -46,7 +46,7 @@ const validationSchema = yup.object({
     description: yup
         .string("Enter description for the product")
         .min(2, "Product description should be at least 2 characters in length!")
-        .max(42, "Product description should be less than 422 characters in length!"),
+        .max(422, "Product description should be less than 422 characters in length!"),
 }).defined();
 
 
