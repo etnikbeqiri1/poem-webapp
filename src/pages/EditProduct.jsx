@@ -1,31 +1,25 @@
 import {
-    Avatar,
     Button,
-    Card, FormControl,
+    Card,
+    FormControl,
     FormControlLabel,
-    IconButton, InputLabel,
+    InputLabel,
     MenuItem,
     Select,
     Switch,
-    TextField, Tooltip
+    TextField,
 } from "@mui/material";
 import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import * as React from "react";
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useState} from "react";
 import Typography from "@mui/material/Typography";
 import {getCategories} from "../helpers/requests/category";
-import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import {styled} from '@mui/material/styles';
-import {useFormik} from "formik";
-import * as profileHelper from "../helpers/requests/profile";
 import {toast} from "react-toastify";
 import * as yup from "yup";
-import {addProduct, editProduct, findProductByID} from "../helpers/requests/product";
+import {editProduct, findProductByID} from "../helpers/requests/product";
 import {FieldArray, Form, Formik, getIn} from "formik";
-import * as PropTypes from "prop-types";
 import VariantComponent from "../components/VariantComponent/VariantComponent";
 import AddVariantComponent from "../components/AddVariantComponent/AddVariantComponent";
 import NoVariantsComponent from "../components/NoVariantsComponent/NoVariantsComponent";
@@ -33,9 +27,6 @@ import firebase from "firebase";
 import {LoadingButton} from "@mui/lab";
 import {useHistory, useParams} from "react-router-dom";
 
-
-const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
-const ibanRegExp = /^([A-Z]{2}[ \-]?[0-9]{2})(?=(?:[ \-]?[A-Z0-9]){9,30}$)((?:[ \-]?[A-Z0-9]{3,5}){2,7})([ \-]?[A-Z0-9]{1,3})?$/
 
 const validationSchema = yup.object({
     name: yup
@@ -46,11 +37,11 @@ const validationSchema = yup.object({
     description: yup
         .string("Enter description for the product")
         .min(2, "Product description should be at least 2 characters in length!")
-        .max(42, "Product description should be less than 422 characters in length!"),
+        .max(422, "Product description should be less than 422 characters in length!"),
 }).defined();
 
 
-export default function EditProduct(props) {
+export default function EditProduct() {
     const [hasVariants, setHasVariants] = useState(false);
     const [category, setCategory] = React.useState([]);
     const [catID, setCatID] = React.useState("1");
@@ -82,7 +73,7 @@ export default function EditProduct(props) {
     const [photoURL, setPhotoURL] = useState("https://socialistmodernism.com/wp-content/uploads/2017/07/placeholder-image.png?w=640");
     const [imageUploading, setImageUploading] = useState(false);
 
-    const { id } = useParams();
+    const {id} = useParams();
 
     useEffect(async () => {
         setLoading(true);
@@ -102,7 +93,7 @@ export default function EditProduct(props) {
         })
 
         setLoading(false)
-    },[])
+    }, [])
 
     const onImageChange = (event) => {
         if (event.target.files && event.target.files[0]) {
@@ -167,7 +158,7 @@ export default function EditProduct(props) {
                                 variant="outlined"
                                 color="primary"
                                 type="submit"
-                                disabled = {loading}
+                                disabled={loading}
                                 startIcon={<SaveIcon/>}
                             >
                                 {loading ?

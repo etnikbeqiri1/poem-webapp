@@ -83,6 +83,13 @@ const App = () => {
                             <PrivateRoute exact path='/product/edit/:id'>
                                 <EditProduct />
                             </PrivateRoute>
+                            <PrivateRoute exact path='/order/create'>
+                                <EditProduct />
+                            </PrivateRoute>
+
+                            <PrivateRoute exact path='/orders'>
+                                <Products />
+                            </PrivateRoute>
 
 
                             <Route path='/signup'>

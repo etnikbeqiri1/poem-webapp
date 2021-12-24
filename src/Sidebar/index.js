@@ -5,15 +5,12 @@ import logo from "../assets/logo.svg";
 import Home from "../assets/home-solid.svg";
 import Team from "../assets/social.svg";
 import ProfileUserIcon from "../assets/settings.svg";
-import PlusIcon from "../assets/Plus.svg";
 import BoxIcon from "../assets/Box.svg";
+import OrderIcon from "../assets/order.svg";
 
-import Calender from "../assets/sceduled.svg";
-import Projects from "../assets/starred.svg";
-import Documents from "../assets/draft.svg";
 import PowerOff from "../assets/power-off-solid.svg";
 import styled from "styled-components";
-import {Link, NavLink, useHistory, useLocation} from "react-router-dom";
+import {Link, NavLink, useHistory} from "react-router-dom";
 import {useAuth} from "../hooks/useAuth";
 import firebase from "firebase/app";
 const Container = styled.div`
@@ -283,7 +280,15 @@ const Sidebar = () => {
                   <Text clicked={click}>Team</Text>
                 </Item>
 
-                {/* products @todo  */}
+                <Item
+                    onClick={() => setClick(false)}
+                    activeClassName="active"
+                    to="/orders"
+                >
+                  <img src={OrderIcon} alt="Orders" />
+                  <Text clicked={click}>Orders</Text>
+                </Item>
+
                 <Item
                     onClick={() => setClick(false)}
                     activeClassName="active"
@@ -292,6 +297,8 @@ const Sidebar = () => {
                   <img src={BoxIcon} alt="Products" />
                   <Text clicked={click}>Products</Text>
                 </Item>
+
+
 
 
                 <Item

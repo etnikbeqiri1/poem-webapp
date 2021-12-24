@@ -1,41 +1,31 @@
 import {
-    Avatar,
     Button,
-    Card, FormControl,
+    Card,
+    FormControl,
     FormControlLabel,
-    IconButton, InputLabel,
+    InputLabel,
     MenuItem,
     Select,
     Switch,
-    TextField, Tooltip
+    TextField,
 } from "@mui/material";
 import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import * as React from "react";
 import {useEffect, useState} from "react";
 import Typography from "@mui/material/Typography";
 import {getCategories} from "../helpers/requests/category";
-import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import {styled} from '@mui/material/styles';
-import {useFormik} from "formik";
-import * as profileHelper from "../helpers/requests/profile";
 import {toast} from "react-toastify";
 import * as yup from "yup";
 import {addProduct} from "../helpers/requests/product";
 import {FieldArray, Form, Formik, getIn} from "formik";
-import * as PropTypes from "prop-types";
 import VariantComponent from "../components/VariantComponent/VariantComponent";
 import AddVariantComponent from "../components/AddVariantComponent/AddVariantComponent";
 import NoVariantsComponent from "../components/NoVariantsComponent/NoVariantsComponent";
 import firebase from "firebase";
 import {LoadingButton} from "@mui/lab";
 import {useHistory} from "react-router-dom";
-
-
-const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
-const ibanRegExp = /^([A-Z]{2}[ \-]?[0-9]{2})(?=(?:[ \-]?[A-Z0-9]){9,30}$)((?:[ \-]?[A-Z0-9]{3,5}){2,7})([ \-]?[A-Z0-9]{1,3})?$/
 
 const validationSchema = yup.object({
     name: yup
@@ -146,7 +136,7 @@ export default function AddProduct() {
                                 variant="outlined"
                                 color="primary"
                                 type="submit"
-                                disabled = {loading}
+                                disabled={loading}
                                 startIcon={<SaveIcon/>}
                             >
                                 {loading ?
