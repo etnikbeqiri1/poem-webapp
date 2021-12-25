@@ -178,6 +178,7 @@ const EnhancedTableToolbar = (props) => {
             sx={{
                 pl: {sm: 2},
                 pr: {xs: 1, sm: 1},
+                pt: 1,
                 ...(numSelected > 0 && {
                     bgcolor: (theme) =>
                         alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
@@ -222,7 +223,7 @@ const EnhancedTableToolbar = (props) => {
                         options={category}
                         getOptionLabel={(option) => option.name}
                         renderInput={(params) => (
-                            <TextField {...params} label="Search By Category" margin="normal"/>
+                            <TextField {...params} label="Search By Category" />
                         )}
                         onChange={(option) => {
                             props.passSearchWord(option.target.outerText);

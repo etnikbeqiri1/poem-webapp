@@ -396,8 +396,7 @@ function Orders() {
                                                         scope="row"
                                                         padding="none"
                                                     >
-                                                        {/*{row.name}*/}
-                                                        {"Filan Fisteku"}
+                                                        {row.full_name}
                                                     </TableCell>
                                                     <TableCell
                                                         align="left">
