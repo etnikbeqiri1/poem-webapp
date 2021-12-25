@@ -19,6 +19,7 @@ import ProfilePage from "./pages/ProfilePage";
 import Products from "./pages/Products";
 import AddProduct from "./pages/AddProduct";
 import EditProduct from "./pages/EditProduct";
+import Orders from "./pages/Orders";
 
 const Pages = styled.div`
   h1 {
@@ -88,7 +89,7 @@ const App = () => {
                             </PrivateRoute>
 
                             <PrivateRoute exact path='/orders'>
-                                <Products />
+                                <Orders />
                             </PrivateRoute>
 
 
