@@ -20,6 +20,7 @@ import Products from "./pages/Products";
 import AddProduct from "./pages/AddProduct";
 import EditProduct from "./pages/EditProduct";
 import Orders from "./pages/Orders";
+import AddOrder from "./pages/AddOrder";
 
 const Pages = styled.div`
   h1 {
@@ -84,12 +85,11 @@ const App = () => {
                             <PrivateRoute exact path='/product/edit/:id'>
                                 <EditProduct />
                             </PrivateRoute>
-                            <PrivateRoute exact path='/order/create'>
-                                <EditProduct />
-                            </PrivateRoute>
-
                             <PrivateRoute exact path='/orders'>
                                 <Orders />
+                            </PrivateRoute>
+                            <PrivateRoute exact path='/order/create'>
+                                <AddOrder />
                             </PrivateRoute>
 
 

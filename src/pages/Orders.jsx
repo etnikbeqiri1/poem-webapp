@@ -324,7 +324,7 @@ function Orders() {
                         variant="outlined"
                         color="primary"
                         onClick={() => {
-                            history.push("/order/add")
+                            history.push("/order/create")
                         }}
                         startIcon={<AddIcon/>}
                     >
