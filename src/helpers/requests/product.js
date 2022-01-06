@@ -22,6 +22,10 @@ export async function getProductsByCategory(data){
      return await post('http://localhost:8000/api/user/products/category',data);
 }
 
+export async function getProductsByName(data){
+     return await post('http://localhost:8000/api/user/product/name',data);
+}
+
 
 
 

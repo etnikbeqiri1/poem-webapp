@@ -1,13 +1,15 @@
 import {
+    alpha,
+    Autocomplete, Avatar,
     Button,
-    Card,
+    Card, CardContent, CardHeader, Chip,
     FormControl,
-    FormControlLabel,
-    InputLabel,
+    FormControlLabel, IconButton,
+    InputLabel, ListItem, ListItemIcon,
     MenuItem,
     Select,
     Switch,
-    TextField,
+    TextField, Toolbar, Tooltip,
 } from "@mui/material";
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -18,7 +20,7 @@ import {getCategories} from "../helpers/requests/category";
 import SaveIcon from '@mui/icons-material/Save';
 import {toast} from "react-toastify";
 import * as yup from "yup";
-import {addProduct} from "../helpers/requests/product";
+import {addProduct, getProducts, getProductsByName} from "../helpers/requests/product";
 import {FieldArray, Form, Formik, getIn} from "formik";
 import VariantComponent from "../components/VariantComponent/VariantComponent";
 import AddVariantComponent from "../components/AddVariantComponent/AddVariantComponent";
@@ -26,6 +28,12 @@ import NoVariantsComponent from "../components/NoVariantsComponent/NoVariantsCom
 import firebase from "firebase";
 import {LoadingButton} from "@mui/lab";
 import {useHistory} from "react-router-dom";
+import DeleteIcon from '@mui/icons-material/Delete';
+import match from "autosuggest-highlight/match";
+import parse from "autosuggest-highlight/parse";
+import PropTypes from "prop-types";
+import * as api_help from "../helpers/requests/product";
+import {getOrdersByName} from "../helpers/requests/order";
 
 const validationSchema = yup.object({
     name: yup
@@ -40,48 +48,85 @@ const validationSchema = yup.object({
 }).defined();
 
 
+function OrderComponent(props) {
+    const [selectedVariant, setSelectedVariant] = useState(props.vari.variants[0]?.id ?? 0);
+
+    const findIndex = (id) => {
+        for (let index = 0; index < props.vari.variants.length; index++) {
+            const variant = props.vari.variants[index];
+            if (variant.id === id) {
+                return index
+            }
+        }
+        return 0
+    }
+
+    useEffect(() => {
+        props.onPriceChange((props.vari?.variants[findIndex(selectedVariant)]?.price ?? props.vari.price) * props.vari.items)
+    }, [props.vari.items, selectedVariant])
+
+    return <Card style={{marginTop: 5}} variant={"outlined"}>
+        <CardHeader avatar={<Avatar src={props.vari.photo}/>} title={props.vari.name} subheader={props.vari.description}
+                    action={<Chip
+                        label={((props.vari?.variants[findIndex(selectedVariant)]?.price ?? props.vari.price) * props.vari.items).toFixed(2) + " €"}
+                        variant={"outlined"} color="primary"/>
+                    }/>
+        <CardContent>
+            {props.vari.hasVariants === 1 && <FormControl style={{marginBottom: 8}} fullWidth>
+                <InputLabel id="demo-simple-select-helper-label">{props.vari.variants[0].selected_variant}</InputLabel>
+                <Select value={selectedVariant}
+                        onChange={(e) => {
+                            setSelectedVariant(e.target.value)
+                        }}
+                        fullWidth
+                        label={props.vari.variants[0].selected_variant}
+                >
+                    {
+                        props.vari.variants.map((variant, index) => {
+                            let selectedVariant = variant.selected_variant;
+                            return (
+                                <MenuItem value={variant.id}>{variant[selectedVariant]}</MenuItem>
+                            )
+                        })
+                    }
+                </Select>
+            </FormControl>}
+
+            <TextField
+                id="outlined-number"
+                label="Quantity"
+                type="number"
+                onChange={(e) => {
+                    props.onChange(e.target.value)
+                }}
+                value={props.vari.items}
+                fullWidth
+            />
+        </CardContent>
+    </Card>;
+}
+
+OrderComponent.propTypes = {vari: PropTypes.any, onChange: PropTypes.any, onPriceChange: PropTypes.any};
 export default function AddOrder() {
 
-    const [hasVariants, setHasVariants] = useState(false);
-    const [category, setCategory] = React.useState([]);
+    const [hasVariants, setHasVariants] = useState(true);
+    const [products, setProducts] = React.useState([]);
     const [countryID, setCountryID] = React.useState("Kosovo");
     const [variantType, setVariantType] = React.useState("name");
     const [sizeSelected, setSizeSelected] = React.useState("s");
     const [loading, setLoading] = React.useState(false);
+    const [selectedProducts, setSelectedProducts] = React.useState([]);
+    const [price, setPrice] = React.useState(0);
+
 
     let history = useHistory();
 
-    const [photoURL, setPhotoURL] = useState("https://socialistmodernism.com/wp-content/uploads/2017/07/placeholder-image.png?w=640");
-    const [imageUploading, setImageUploading] = useState(false);
-
-
-    const onImageChange = (event) => {
-        if (event.target.files && event.target.files[0]) {
-            let img = event.target.files[0];
-            const user = firebase.auth().currentUser;
-            setImageUploading(true);
-            const storageRef = firebase.storage().ref(user?.uid + '/product/' + Math.floor(Math.random() * 9999999) + '/' + img.name);
-            storageRef.put(img).then((snapshot) => {
-                console.log(snapshot.ref.getDownloadURL().then(e => {
-                    setPhotoURL(e)
-                }))
-            }).finally(() => {
-                setImageUploading(false);
-            });
-        }
-    }
-
-    useEffect(async () => {
-        let req = await getCategories();
-        setCategory(req.data);
-    }, [])
-
+    useEffect(() => {
+        console.log(selectedProducts)
+    }, [selectedProducts])
 
     const handleVariantChange = (event) => {
         setHasVariants(event.target.checked);
-    };
-    const handleVariantTypeChange = (event) => {
-        setVariantType(event.target.value);
     };
     const handleCategoryChange = (event) => {
         setCountryID(event.target.value);
@@ -89,6 +134,16 @@ export default function AddOrder() {
     const handleSizeChange = (event) => {
         setSizeSelected(event.target.value);
     };
+
+    const [searchWord, setSearchWord] = useState("");
+    useEffect(async () => {
+        console.log(searchWord);
+        let data = {
+            "name": searchWord
+        }
+        let res = await getProductsByName(data);
+        setProducts(res.data)
+    }, [searchWord])
 
     return (
         <Grid>
@@ -100,24 +155,13 @@ export default function AddOrder() {
                     description: "",
                     price: 0,
                     stock: 0,
-                    variants: [
-                        {
-                            selected_variant: "name",
-                            name: "",
-                            price: 0,
-                            stock: 0,
-                            size: "",
-                            color: "",
-                            gender: "",
-                        }
-                    ]
+                    products: []
                 }}
                 validationSchema={validationSchema}
                 onSubmit={async values => {
                     setLoading(true);
                     values.category = countryID;
                     values.hasVariants = hasVariants;
-                    values.photo = photoURL;
                     let res = await addProduct(values)
                     setLoading(false);
                     toast(res.info.message)
@@ -142,7 +186,7 @@ export default function AddOrder() {
                                 {loading ?
                                     'Loading'
                                     :
-                                    'Save'
+                                    'Create Order'
                                 }
                             </Button>
                         </Box>
@@ -266,36 +310,8 @@ export default function AddOrder() {
                                                     </Select>
                                                 </FormControl>
                                             </Grid>
-                                            <Grid m={1} xs={12}>
-                                                <TextField
-                                                    id="description"
-                                                    label="Description"
-                                                    fullWidth
-                                                    name={"description"}
-                                                    multiline
-                                                    rows={3}
-                                                    value={values.description}
-                                                    onChange={handleChange}
-                                                    error={touched.description && Boolean(errors.description)}
-                                                    helperText={touched.description && errors.description}
-                                                />
-                                            </Grid>
-                                            <Grid m={1} xs={10}>
-                                                <FormControlLabel
-                                                    value="start"
-                                                    control={
-                                                        <Switch
-                                                            aria-label={"switch"}
-                                                            value={hasVariants}
-                                                            color="primary"
-                                                            onChange={handleVariantChange}
-                                                        />
-                                                    }
-                                                    label="Has Variants"
-                                                    labelPlacement="has_variants"
-                                                />
 
-                                            </Grid>
+
                                             <Grid m={1}>
                                                 {hasVariants ? (
                                                     <></>
@@ -320,109 +336,47 @@ export default function AddOrder() {
                                                           alignItems={'stretch'}
                                                           p={2}
                                                     >
-                                                        <Grid xs={12}>
-                                                            <Typography variant='text' align='center'>Select Variant
-                                                                Types</Typography>
-                                                        </Grid>
                                                         <Grid m={1} xs={12}>
-                                                            <FormControl fullWidth>
-                                                                <InputLabel
-                                                                    id="demo-simple-select-label">Variant
-                                                                    Type</InputLabel>
-
-                                                                <Select
-                                                                    labelId="demo-simple-select-label"
-                                                                    id="variantType"
-                                                                    value={variantType}
-                                                                    onChange={handleVariantTypeChange}
-                                                                    label="Variant Type"
-                                                                    fullWidth
-                                                                    color={"primary"}
-                                                                >
-                                                                    <MenuItem value={'name'}>By Name</MenuItem>
-                                                                    <MenuItem value={'size'}>By Size</MenuItem>
-                                                                    <MenuItem value={'color'}>By Color</MenuItem>
-                                                                    <MenuItem value={'gender'}>By Gender</MenuItem>
-                                                                </Select>
-                                                            </FormControl>
+                                                            <Autocomplete
+                                                                multiple
+                                                                id="multiple-limit-tags"
+                                                                options={products}
+                                                                getOptionLabel={(option) => option.name}
+                                                                renderInput={(params) => (
+                                                                    <TextField {...params} label="Select Products"
+                                                                               placeholder="Products"/>
+                                                                )}
+                                                                onChange={(event, newValue) => {
+                                                                    console.log(JSON.stringify(newValue, null, ' '));
+                                                                    setSelectedProducts(newValue.map((item, index) => {
+                                                                        return {...item, items: 1};
+                                                                    }));
+                                                                    values.products = newValue;
+                                                                }}
+                                                            />
                                                         </Grid>
                                                     </Grid>
                                                 </Card>
                                             </Grid>
 
-                                            <FieldArray name="variants">
-                                                {({push, remove}) => (
-                                                    <>
-                                                        {values.variants.map((vari, index) => {
-                                                            const name = `variants[${index}].name`;
-                                                            const touchedName = getIn(touched, name);
-                                                            const errorName = getIn(errors, name);
-
-                                                            const size = `variants[${index}].size`;
-                                                            const touchedSize = getIn(touched, size);
-                                                            const errorSize = getIn(errors, size);
-
-                                                            const color = `variants[${index}].color`;
-                                                            const touchedColor = getIn(touched, color);
-                                                            const errorColor = getIn(errors, color);
-
-                                                            const gender = `variants[${index}].gender`;
-                                                            const touchedGender = getIn(touched, gender);
-                                                            const errorGender = getIn(errors, gender);
-
-                                                            const stock = `variants[${index}].stock`;
-                                                            const touchedStock = getIn(touched, stock);
-                                                            const errorStock = getIn(errors, stock);
-
-                                                            const price = `variants[${index}].price`;
-                                                            const touchedPrice = getIn(touched, price);
-                                                            const errorPrice = getIn(errors, price);
-
-                                                            vari.selected_variant = variantType;
-                                                            return (
-                                                                <VariantComponent key={index}
-                                                                                  index={index}
-                                                                                  onClick={() => remove(index)}
-                                                                                  variantType={variantType}
-                                                                                  name={name}
-                                                                                  vari={vari}
-                                                                                  touchedName={touchedName}
-                                                                                  errorName={errorName}
-                                                                                  onChange={handleChange}
-                                                                                  onBlur={handleBlur}
-                                                                                  value={sizeSelected}
-                                                                                  onChange1={handleSizeChange}
-                                                                                  name1={price}
-                                                                                  touchedPrice={touchedPrice}
-                                                                                  errorPrice={errorPrice}
-                                                                                  name2={stock}
-                                                                                  touchedStock={touchedStock}
-                                                                                  errorStock={errorStock}
-                                                                                  size={size}
-                                                                                  touchedSize={touchedSize}
-                                                                                  errorSize={errorSize}
-                                                                                  color={color}
-                                                                                  touchedColor={touchedColor}
-                                                                                  errorColor={errorColor}
-                                                                                  gender={gender}
-                                                                                  touchedGender={touchedGender}
-                                                                                  errorGender={errorGender}
-                                                                />
-                                                            );
-                                                        })}
-                                                        <AddVariantComponent onClick={() =>
-                                                            push({
-                                                                name: "",
-                                                                price: 0,
-                                                                stock: 0,
-                                                                size: "",
-                                                                color: "",
-                                                                gender: ""
-                                                            })}/>
-                                                    </>
-
-                                                )}
-                                            </FieldArray>
+                                            {selectedProducts.map((vari, index) => {
+                                                return (
+                                                    <OrderComponent vari={vari} onChange={(items) => {
+                                                        let temp = [...selectedProducts];
+                                                        temp[index].items = items;
+                                                        setSelectedProducts(temp);
+                                                    }}
+                                                                    onPriceChange={(newPrice) => {
+                                                                        let temp = [...selectedProducts];
+                                                                        temp[index].priceNow = newPrice;
+                                                                        setSelectedProducts(temp);
+                                                                    }}
+                                                    />
+                                                );
+                                            })}
+                                            <Card style={{marginTop: 5}} variant={"outlined"}>
+                                                <CardHeader title={"Total"} action={selectedProducts.reduce((a, b) => a + b.priceNow, 0)}/>
+                                            </Card>
 
                                         </Grid>
                                     </>
