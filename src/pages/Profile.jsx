@@ -1,29 +1,13 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useState} from "react";
 import {useAuth} from "../hooks/useAuth";
 import styled from "styled-components";
-import * as profileHelper from "../helpers/requests/profile";
 import CustomInput from "../components/CustomInput/CustomInput";
-import {Button} from "reactstrap";
 import {TextField} from "@mui/material";
 
-const Profile= () => {
+const Profile = () => {
     const auth = useAuth();
-
-
     const [text, setText] = useState("");
     const [name, setName] = useState(auth.user.displayName);
-    const input = useRef(null);
-    const [profile, setProfile] = useState({});
-    const [refresh, setRefresh] = useState(0);
-
-
-
-    // useEffect(async () => {
-    //     let res = await profileHelper.getProfile();
-    //     console.log(res);
-    //     setProfile(res.data);
-    // }, [refresh]);
-    //
 
 
     return <ProfileContainer>
@@ -31,16 +15,19 @@ const Profile= () => {
         <div className={"container mt-12"}>
             <div className={"flex flex-wrap justify-evenly"}>
 
-                <div className={"flex lg:w-1/4 md:w-2/4 sm:w-1/2 w-full bg-gray-100 shadow-lg rounded-xl m-4 pt-6 pb-16"}>
+                <div
+                    className={"flex lg:w-1/4 md:w-2/4 sm:w-1/2 w-full bg-gray-100 shadow-lg rounded-xl m-4 pt-6 pb-16"}>
                     <div className={"w-full pr-4"}>
                         <div className={"flex flex-row justify-between align-center pb-4"}>
 
-                            <div className="mt-8 ml-7 h-24 w-24" >
-                                <img className="rounded-full" src={"https://eu.ui-avatars.com/api/?background=C7D2FE&color=A855F7&size=240&name=Eohn+Boe"} />
+                            <div className="mt-8 ml-7 h-24 w-24">
+                                <img className="rounded-full"
+                                     src={"https://eu.ui-avatars.com/api/?background=C7D2FE&color=A855F7&size=240&name=Eohn+Boe"}/>
                             </div>
 
-                            <div className={"w-auto p-3 mt-10 isolate"} >
-                                <div className={"rounded-xl bg-secondary p-3  align-text-bottom shadow-lg hover:shadow-xl"}>
+                            <div className={"w-auto p-3 mt-10 isolate"}>
+                                <div
+                                    className={"rounded-xl bg-secondary p-3  align-text-bottom shadow-lg hover:shadow-xl"}>
                                     <button className="focus:outline-none ">
                                         Change Image
                                     </button>
@@ -51,7 +38,7 @@ const Profile= () => {
                             <div className={"w-full"}>
                                 <div className={""}>
                                     <p className={"font-light capitalize ml-2 text-sm opacity-40"}>Name</p>
-                                    <CustomInput disabled value={auth.user.displayName} />
+                                    <CustomInput disabled value={auth.user.displayName}/>
                                 </div>
                             </div>
 
@@ -59,7 +46,7 @@ const Profile= () => {
                                 <div className={""}>
                                     <p className={"font-light ml-2 text-sm opacity-40"}>Email</p>
 
-                                    <CustomInput disabled value={auth.user.email} />
+                                    <CustomInput disabled value={auth.user.email}/>
                                 </div>
                             </div>
 
@@ -83,7 +70,7 @@ const Profile= () => {
                                 <div className={""}>
                                     <p className={"font-light capitalize ml-2 text-sm opacity-40"}>Last Login</p>
 
-                                    <CustomInput disabled value={auth.user.metadata.lastSignInTime} />
+                                    <CustomInput disabled value={auth.user.metadata.lastSignInTime}/>
                                 </div>
                                 {/*<div className={"m-3 p-2 rounded-xl shadow-inner"}>*/}
                                 {/*    <h5 className={"font-light"}>Last Login</h5>*/}
@@ -105,7 +92,7 @@ const Profile= () => {
                             <div className={"md:w-2/3 xl:w-1/3 w-5/6"}>
                                 <p className={"font-light capitalize ml-2 text-sm opacity-40"}>full name</p>
 
-                                <CustomInput placeholder={"John Doe"} value={name} />
+                                <CustomInput placeholder={"John Doe"} value={name}/>
                             </div>
 
                             <div className={"md:w-2/3 xl:w-1/3 w-5/6"}>
@@ -171,13 +158,12 @@ const Profile= () => {
         </div>
 
 
-
     </ProfileContainer>
 
 };
 
 const ProfileContainer = styled.div`
-  
+
 `;
 
 

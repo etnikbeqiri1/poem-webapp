@@ -19,9 +19,8 @@ import {useEffect, useState} from "react";
 import SaveIcon from '@mui/icons-material/Save';
 import {toast} from "react-toastify";
 import * as yup from "yup";
-import {getProducts, getProductsByName} from "../helpers/requests/product";
-import { Form, Formik} from "formik";
-import NoVariantsComponent from "../components/NoVariantsComponent/NoVariantsComponent";
+import {getProducts} from "../helpers/requests/product";
+import {Form, Formik} from "formik";
 import {useHistory} from "react-router-dom";
 import PropTypes from "prop-types";
 import {addOrder} from "../helpers/requests/order";
@@ -33,29 +32,23 @@ const validationSchema = yup.object({
         .string("Enter consumer full name")
         .min(2, "Full name should be at least 2 characters in length!")
         .max(60, "Full name should be less than 60 characters in length!")
-        .required("Full name is required!"),
-    street: yup
+        .required("Full name is required!"), street: yup
         .string("Enter consumer street name")
         .min(2, "Street name should be at least 2 characters in length!")
         .max(60, "Street name should be less than 60 characters in length!")
-        .required("Street name is required!"),
-    street_2: yup
+        .required("Street name is required!"), street_2: yup
         .string("Enter consumer street name")
         .min(2, "Street name should be at least 2 characters in length!")
-        .max(60, "Street name should be less than 60 characters in length!"),
-    phone: yup
+        .max(60, "Street name should be less than 60 characters in length!"), phone: yup
         .string()
         .matches(phoneRegExp, 'Phone number is not valid')
-        .required("Phone Number is required"),
-    phone_2: yup
+        .required("Phone Number is required"), phone_2: yup
         .string()
-        .matches(phoneRegExp, 'Phone number is not valid'),
-    city: yup
+        .matches(phoneRegExp, 'Phone number is not valid'), city: yup
         .string("Enter consumer city name")
         .min(2, "City name should be at least 2 characters in length!")
         .max(42, "City name should be less than 42 characters in length!")
-        .required("City name is required!"),
-    zip: yup
+        .required("City name is required!"), zip: yup
         .number("Enter consumer zip code")
         .required("Zip is required!"),
 }).defined();
@@ -75,17 +68,15 @@ function OrderComponent(props) {
     }
 
     useEffect(() => {
-        props.onPriceChange(((props.vari?.variants[findIndex(selectedVariant)]?.price ?? props.vari.price) * props.vari.items),selectedVariant)
+        props.onPriceChange(((props.vari?.variants[findIndex(selectedVariant)]?.price ?? props.vari.price) * props.vari.items), selectedVariant)
     }, [props.vari.items, selectedVariant])
 
     return <Card key={2} style={{marginTop: 5}} variant={"outlined"}>
         <CardHeader avatar={<Avatar src={props.vari.photo}/>} title={props.vari.name} subheader={props.vari.description}
-                    action={
-                        <Chip
+                    action={<Chip
                         label={((props.vari?.variants[findIndex(selectedVariant)]?.price ?? props.vari.price) * props.vari.items).toFixed(2) + " €"}
                         variant={"outlined"}
-                        color="primary"/>
-                    }/>
+                        color="primary"/>}/>
         <CardContent>
             {props.vari.hasVariants === 1 && <FormControl style={{marginBottom: 8}} fullWidth>
                 <InputLabel id="demo-simple-select-helper-label">{props.vari.variants[0].selected_variant}</InputLabel>
@@ -96,14 +87,10 @@ function OrderComponent(props) {
                         fullWidth
                         label={props.vari.variants[0].selected_variant}
                 >
-                    {
-                        props.vari.variants.map((variant, index) => {
-                            let selectedVariant = variant.selected_variant;
-                            return (
-                                <MenuItem value={variant.id}>{variant[selectedVariant]}</MenuItem>
-                            )
-                        })
-                    }
+                    {props.vari.variants.map((variant, index) => {
+                        let selectedVariant = variant.selected_variant;
+                        return (<MenuItem value={variant.id}>{variant[selectedVariant]}</MenuItem>)
+                    })}
                 </Select>
             </FormControl>}
 
@@ -140,18 +127,17 @@ export default function AddOrder() {
         setProducts(res.data)
     }, [])
 
-    return (
-        <Grid>
+    return (<Grid>
             <Formik
                 initialValues={{
                     statusName: "ShopTestName",
-                    full_name : "",
-                    street : "",
-                    street_2 : "",
-                    phone : "",
-                    phone_2 : "",
-                    city : "",
-                    zip : "",
+                    full_name: "",
+                    street: "",
+                    street_2: "",
+                    phone: "",
+                    phone_2: "",
+                    city: "",
+                    zip: "",
                     products: []
                 }}
                 validationSchema={validationSchema}
@@ -166,10 +152,10 @@ export default function AddOrder() {
                             items: parseInt(item.items),
                         };
                     });
-                    if(values.products.length < 1){
+                    if (values.products.length < 1) {
                         toast("Please add at least one product")
                         setLoading(false);
-                    }else{
+                    } else {
                         let res = await addOrder(values)
                         setLoading(false);
                         toast(res.info.message)
@@ -177,8 +163,7 @@ export default function AddOrder() {
                     }
                 }}
             >
-                {({values, touched, errors, handleChange, handleBlur, isValid}) => (
-                    <Form noValidate autoComplete="off">
+                {({values, touched, errors, handleChange, handleBlur, isValid}) => (<Form noValidate autoComplete="off">
                         <Box
                             mt={2}
                             display={'flex'}
@@ -191,11 +176,7 @@ export default function AddOrder() {
                                 disabled={loading}
                                 startIcon={<SaveIcon/>}
                             >
-                                {loading ?
-                                    'Loading'
-                                    :
-                                    'Create Order'
-                                }
+                                {loading ? 'Loading' : 'Create Order'}
                             </Button>
                         </Box>
                         <Grid pt={2} pb={8} sx={{flexGrow: 1, flexWrap: 1}}>
@@ -335,62 +316,58 @@ export default function AddOrder() {
                                         </Grid>
                                     </Card>
                                 </Grid>
-                                        <Grid item xs={6}>
-                                            <Grid>
-                                                <Card variant="outlined">
-                                                    <Grid display={'flex'}
-                                                          flexDirection={'column'}
-                                                          alignItems={'stretch'}
-                                                          p={2}
-                                                    >
-                                                        <Grid m={1} xs={12}>
-                                                            <Autocomplete
-                                                                multiple
-                                                                id="multiple-limit-tags"
-                                                                options={products}
-                                                                getOptionLabel={(option) => option.name}
-                                                                renderInput={(params) => (
-                                                                    <TextField {...params} label="Select Products"
-                                                                               placeholder="Products"/>
-                                                                )}
-                                                                onChange={(event, newValue) => {
-                                                                    console.log(JSON.stringify(newValue, null, ' '));
-                                                                    setSelectedProducts(newValue.map((item, index) => {
-                                                                        return {...item, items: 1};
-                                                                    }));
-                                                                    // values.products = newValue;
-                                                                }}
-                                                            />
-                                                        </Grid>
-                                                    </Grid>
-                                                </Card>
-                                            </Grid>
-
-                                            {selectedProducts.map((vari, index) => {
-                                                return (
-                                                    <OrderComponent vari={vari} onChange={(items) => {
-                                                        let temp = [...selectedProducts];
-                                                        temp[index].items = items;
-                                                        setSelectedProducts(temp);
-                                                    }}
-                                                                    onPriceChange={(newPrice,variantID) => {
-                                                                        let temp = [...selectedProducts];
-                                                                        temp[index].priceNow = newPrice;
-                                                                        temp[index].selectedVariantNow = variantID;
-                                                                        setSelectedProducts(temp);
-                                                                    }}
+                                <Grid item xs={6}>
+                                    <Grid>
+                                        <Card variant="outlined">
+                                            <Grid display={'flex'}
+                                                  flexDirection={'column'}
+                                                  alignItems={'stretch'}
+                                                  p={2}
+                                            >
+                                                <Grid m={1} xs={12}>
+                                                    <Autocomplete
+                                                        multiple
+                                                        id="multiple-limit-tags"
+                                                        options={products}
+                                                        getOptionLabel={(option) => option.name}
+                                                        renderInput={(params) => (
+                                                            <TextField {...params} label="Select Products"
+                                                                       placeholder="Products"/>)}
+                                                        onChange={(event, newValue) => {
+                                                            console.log(JSON.stringify(newValue, null, ' '));
+                                                            setSelectedProducts(newValue.map((item, index) => {
+                                                                return {...item, items: 1};
+                                                            }));
+                                                            // values.products = newValue;
+                                                        }}
                                                     />
-                                                );
-                                            })}
-                                            <Card style={{marginTop: 5}} variant={"outlined"}>
-                                                <CardHeader title={"Total"} action={selectedProducts.reduce((a, b) => a + b.priceNow, 0) + " €"}/>
-                                            </Card>
-                                        </Grid>
+                                                </Grid>
+                                            </Grid>
+                                        </Card>
+                                    </Grid>
+
+                                    {selectedProducts.map((vari, index) => {
+                                        return (<OrderComponent vari={vari} onChange={(items) => {
+                                                let temp = [...selectedProducts];
+                                                temp[index].items = items;
+                                                setSelectedProducts(temp);
+                                            }}
+                                                                onPriceChange={(newPrice, variantID) => {
+                                                                    let temp = [...selectedProducts];
+                                                                    temp[index].priceNow = newPrice;
+                                                                    temp[index].selectedVariantNow = variantID;
+                                                                    setSelectedProducts(temp);
+                                                                }}
+                                            />);
+                                    })}
+                                    <Card style={{marginTop: 5}} variant={"outlined"}>
+                                        <CardHeader title={"Total"}
+                                                    action={selectedProducts.reduce((a, b) => a + b.priceNow, 0) + " €"}/>
+                                    </Card>
+                                </Grid>
                             </Grid>
                         </Grid>
-                    </Form>
-                )}
+                    </Form>)}
             </Formik>
-        </Grid>
-    );
+        </Grid>);
 }

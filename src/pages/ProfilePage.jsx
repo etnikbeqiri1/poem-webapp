@@ -1,30 +1,21 @@
 import * as React from 'react';
+import {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Select from '@mui/material/Select';
-// import countryList from 'react-select-country-list'
 import {
-    Avatar,
-    Button, Card, CardHeader,
-    Container,
-    Divider, FormControl, Grid, IconButton, InputAdornment,
-    InputLabel,
-    MenuItem,
-    TextField
+    Button, Card, Container, Divider, FormControl, Grid, IconButton, InputAdornment, InputLabel, MenuItem, TextField
 } from "@mui/material";
 import * as yup from 'yup';
 import {useFormik} from "formik";
-import {useEffect, useMemo, useState} from "react";
 import * as profileHelper from "../helpers/requests/profile";
 import {useAuth} from "../hooks/useAuth";
-import {setUserAddress} from "../helpers/requests/profile";
 import {toast} from "react-toastify";
 import firebase from "firebase/app";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
-import {LoadingButton} from "@mui/lab";
 import ProfileDataAndImage from "../components/ProfileDataAndImage/ProfileDataAndImage";
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
@@ -35,24 +26,19 @@ const validationSchema = yup.object({
         .string("Enter your street name")
         .min(2, "Street should be at least 2 characters in length!")
         .max(42, "Street should be less than 42 characters in length!")
-        .required("Street name is required!"),
-    street_2: yup
+        .required("Street name is required!"), street_2: yup
         .string("Enter your street name")
         .min(2, "Street should be at least 2 characters in length!")
-        .max(42, "Street should be less than 42 characters in length!"),
-    phone: yup
+        .max(42, "Street should be less than 42 characters in length!"), phone: yup
         .string()
         .matches(phoneRegExp, 'Phone number is not valid')
-        .required("Phone Number is required"),
-    phone_2: yup
+        .required("Phone Number is required"), phone_2: yup
         .string()
-        .matches(phoneRegExp, 'Phone number is not valid'),
-    city: yup
+        .matches(phoneRegExp, 'Phone number is not valid'), city: yup
         .string("Enter your city name")
         .min(2, "City name should be at least 2 characters in length!")
         .max(42, "City name should be less than 42 characters in length!")
-        .required("City name is required!"),
-    zip: yup
+        .required("City name is required!"), zip: yup
         .number("Enter your zip code")
         .required("Zip is required!"),
 }).defined();
@@ -68,12 +54,10 @@ const validationSchemaIban = yup.object({
 const validationSchemaPassword = yup.object({
     current_password: yup
         .string()
-        .required('Password is required'),
-    new_password: yup
+        .required('Password is required'), new_password: yup
         .string()
         .min(8, 'Password should be of minimum 8 characters length')
-        .required('New Password is required'),
-    confirm_new_password: yup
+        .required('New Password is required'), confirm_new_password: yup
         .string()
         .oneOf([yup.ref('new_password'), null], 'Passwords must match')
 }).defined();
@@ -82,33 +66,26 @@ const validationSchemaPassword = yup.object({
 function TabPanel(props) {
     const {children, value, index, ...other} = props;
 
-    return (
-        <div
+    return (<div
             role="tabpanel"
             hidden={value !== index}
             id={`vertical-tabpanel-${index}`}
             aria-labelledby={`vertical-tab-${index}`}
             {...other}
         >
-            {value === index && (
-                <Box sx={{p: 3}}>
+            {value === index && (<Box sx={{p: 3}}>
                     <Typography>{children}</Typography>
-                </Box>
-            )}
-        </div>
-    );
+                </Box>)}
+        </div>);
 }
 
 TabPanel.propTypes = {
-    children: PropTypes.node,
-    index: PropTypes.number.isRequired,
-    value: PropTypes.number.isRequired,
+    children: PropTypes.node, index: PropTypes.number.isRequired, value: PropTypes.number.isRequired,
 };
 
 function a11yProps(index) {
     return {
-        id: `vertical-tab-${index}`,
-        'aria-controls': `vertical-tabpanel-${index}`,
+        id: `vertical-tab-${index}`, 'aria-controls': `vertical-tabpanel-${index}`,
     };
 }
 
@@ -119,7 +96,6 @@ function VerticalTabs() {
         setValue(newValue);
     };
 }
-
 
 
 function ProfilePage() {
@@ -166,8 +142,7 @@ function ProfilePage() {
 
     const handleClickShowPassword = () => {
         setPasswordHide({
-            ...passwordHide,
-            showPassword: !passwordHide.showPassword,
+            ...passwordHide, showPassword: !passwordHide.showPassword,
         });
     };
 
@@ -212,16 +187,8 @@ function ProfilePage() {
 
     const formik = useFormik({
         initialValues: {
-            "street": "",
-            "street_2": "",
-            "phone": "",
-            "phone_2": "",
-            "city": "",
-            "zip": "",
-            "country": ""
-        },
-        validationSchema: validationSchema,
-        onSubmit: async (values) => {
+            "street": "", "street_2": "", "phone": "", "phone_2": "", "city": "", "zip": "", "country": ""
+        }, validationSchema: validationSchema, onSubmit: async (values) => {
             setLoading(true);
             let res = await profileHelper.setUserAddress(values);
             setRefresh(refresh + 1);
@@ -233,9 +200,7 @@ function ProfilePage() {
     const formikBank = useFormik({
         initialValues: {
             "iban": "",
-        },
-        validationSchema: validationSchemaIban,
-        onSubmit: async (values) => {
+        }, validationSchema: validationSchemaIban, onSubmit: async (values) => {
             setLoading(true);
             let res = await profileHelper.updateBank(values);
             setRefresh(refresh + 1);
@@ -247,18 +212,13 @@ function ProfilePage() {
 
     const formikForPassword = useFormik({
         initialValues: {
-            current_password: '',
-            new_password: '',
-            confirm_new_password: '',
-        },
-        validationSchema: validationSchemaPassword,
-        onSubmit: (values) => {
+            current_password: '', new_password: '', confirm_new_password: '',
+        }, validationSchema: validationSchemaPassword, onSubmit: (values) => {
             setLoading(true);
             const currentUser = firebase.auth().currentUser;
             if (currentUser) {
                 if (currentUser.email != null) {
-                    const cred = firebase.auth.EmailAuthProvider.credential(
-                        currentUser.email, values.current_password);
+                    const cred = firebase.auth.EmailAuthProvider.credential(currentUser.email, values.current_password);
 
                     currentUser.reauthenticateWithCredential(cred).then((e) => {
                         e.user?.updatePassword(values.new_password).then(() => {
@@ -278,8 +238,7 @@ function ProfilePage() {
     });
 
 
-    return (
-        <Container>
+    return (<Container>
             <Box mt={8}/>
             <Grid container spacing={3}>
                 <Grid item xs={12} md={2}>
@@ -291,8 +250,7 @@ function ProfilePage() {
                             onChange={handleChange}
                             aria-label="Vertical tabs example"
                             sx={{
-                                borderRight: 1,
-                                borderColor: 'divider'
+                                borderRight: 1, borderColor: 'divider'
                             }}
                         >
                             <Tab label="Profile" {...a11yProps(0)} />
@@ -325,8 +283,7 @@ function ProfilePage() {
                                     <ProfileDataAndImage onChange={onImageChange} loading={imageUploading}/>
                                     <Box
                                         sx={{
-                                            width: 300,
-                                            // border: 1
+                                            width: 300, // border: 1
                                         }}
 
                                     >
@@ -339,8 +296,7 @@ function ProfilePage() {
                                     </Box>
                                     <Box
                                         sx={{
-                                            width: 300,
-                                            // border: 1
+                                            width: 300, // border: 1
                                         }}
 
                                     >
@@ -352,8 +308,7 @@ function ProfilePage() {
                                     </Box>
                                     <Box
                                         sx={{
-                                            width: 300,
-                                            // border: 1
+                                            width: 300, // border: 1
                                         }}
 
                                     >
@@ -498,8 +453,7 @@ function ProfilePage() {
                                 </Box>
                                 <Box>
                                     <Box m={2} sx={{
-                                        display: "flex",
-                                        justifyContent: 'flex-end'
+                                        display: "flex", justifyContent: 'flex-end'
                                     }}>
                                         <Button
                                             variant="outlined"
@@ -540,9 +494,7 @@ function ProfilePage() {
                                 <Box>
                                     <Box>
                                         <Box m={2} sx={{
-                                            display: "flex",
-                                            justifyContent: 'flex-start',
-                                            alignItems: 'center'
+                                            display: "flex", justifyContent: 'flex-start', alignItems: 'center'
                                         }}>
                                             <Box pr={2}>
                                                 <TextField id="iban"
@@ -594,19 +546,17 @@ function ProfilePage() {
                                                        onChange={formikForPassword.handleChange}
                                                        error={formikForPassword.touched.current_password && Boolean(formikForPassword.errors.current_password)}
                                                        helperText={formikForPassword.touched.current_password && formikForPassword.errors.current_password}
-                                                       endAdornment={
-                                                           <InputAdornment position="end">
-                                                               <IconButton
-                                                                   aria-label="toggle password visibility"
-                                                                   onClick={handleClickShowPassword}
-                                                                   onMouseDown={handleMouseDownPassword}
-                                                                   edge="end"
-                                                               >
-                                                                   {passwordHide.showPassword ? <VisibilityOff/> :
-                                                                       <Visibility/>}
-                                                               </IconButton>
-                                                           </InputAdornment>
-                                                       }
+                                                       endAdornment={<InputAdornment position="end">
+                                                           <IconButton
+                                                               aria-label="toggle password visibility"
+                                                               onClick={handleClickShowPassword}
+                                                               onMouseDown={handleMouseDownPassword}
+                                                               edge="end"
+                                                           >
+                                                               {passwordHide.showPassword ? <VisibilityOff/> :
+                                                                   <Visibility/>}
+                                                           </IconButton>
+                                                       </InputAdornment>}
                                             />
                                         </Box>
                                     </Box>
@@ -622,19 +572,17 @@ function ProfilePage() {
                                                        onChange={formikForPassword.handleChange}
                                                        error={formikForPassword.touched.new_password && Boolean(formikForPassword.errors.new_password)}
                                                        helperText={formikForPassword.touched.new_password && formikForPassword.errors.new_password}
-                                                       endAdornment={
-                                                           <InputAdornment position="end">
-                                                               <IconButton
-                                                                   aria-label="toggle password visibility"
-                                                                   onClick={handleClickShowPassword}
-                                                                   onMouseDown={handleMouseDownPassword}
-                                                                   edge="end"
-                                                               >
-                                                                   {passwordHide.showPassword ? <VisibilityOff/> :
-                                                                       <Visibility/>}
-                                                               </IconButton>
-                                                           </InputAdornment>
-                                                       }
+                                                       endAdornment={<InputAdornment position="end">
+                                                           <IconButton
+                                                               aria-label="toggle password visibility"
+                                                               onClick={handleClickShowPassword}
+                                                               onMouseDown={handleMouseDownPassword}
+                                                               edge="end"
+                                                           >
+                                                               {passwordHide.showPassword ? <VisibilityOff/> :
+                                                                   <Visibility/>}
+                                                           </IconButton>
+                                                       </InputAdornment>}
                                             />
                                         </Box>
                                     </Box>
@@ -650,19 +598,17 @@ function ProfilePage() {
                                                        onChange={formikForPassword.handleChange}
                                                        error={formikForPassword.touched.confirm_new_password && Boolean(formikForPassword.errors.confirm_new_password)}
                                                        helperText={formikForPassword.touched.confirm_new_password && formikForPassword.errors.confirm_new_password}
-                                                       endAdornment={
-                                                           <InputAdornment position="end">
-                                                               <IconButton
-                                                                   aria-label="toggle password visibility"
-                                                                   onClick={handleClickShowPassword}
-                                                                   onMouseDown={handleMouseDownPassword}
-                                                                   edge="end"
-                                                               >
-                                                                   {passwordHide.showPassword ? <VisibilityOff/> :
-                                                                       <Visibility/>}
-                                                               </IconButton>
-                                                           </InputAdornment>
-                                                       }
+                                                       endAdornment={<InputAdornment position="end">
+                                                           <IconButton
+                                                               aria-label="toggle password visibility"
+                                                               onClick={handleClickShowPassword}
+                                                               onMouseDown={handleMouseDownPassword}
+                                                               edge="end"
+                                                           >
+                                                               {passwordHide.showPassword ? <VisibilityOff/> :
+                                                                   <Visibility/>}
+                                                           </IconButton>
+                                                       </InputAdornment>}
                                             />
                                         </Box>
                                         <Box ml={1} mb={2}>
@@ -683,9 +629,7 @@ function ProfilePage() {
                     </Card>
                 </Grid>
             </Grid>
-        </Container>
-    )
-        ;
+        </Container>);
 }
 
 export default ProfilePage;

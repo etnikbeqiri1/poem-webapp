@@ -1,13 +1,5 @@
 import {
-    Button,
-    Card,
-    FormControl,
-    FormControlLabel,
-    InputLabel,
-    MenuItem,
-    Select,
-    Switch,
-    TextField,
+    Button, Card, FormControl, FormControlLabel, InputLabel, MenuItem, Select, Switch, TextField,
 } from "@mui/material";
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -32,8 +24,7 @@ const validationSchema = yup.object({
         .string("Enter your product name")
         .min(2, "Product name should be at least 2 characters in length!")
         .max(42, "Product name should be less than 42 characters in length!")
-        .required("Product name is required!"),
-    description: yup
+        .required("Product name is required!"), description: yup
         .string("Enter description for the product")
         .min(2, "Product description should be at least 2 characters in length!")
         .max(422, "Product description should be less than 422 characters in length!"),
@@ -90,27 +81,12 @@ export default function AddProduct() {
         setSizeSelected(event.target.value);
     };
 
-    return (
-        <Grid>
+    return (<Grid>
             <Formik
                 initialValues={{
-                    name: "",
-                    category: 1,
-                    hasVariants: hasVariants,
-                    description: "",
-                    price: 0,
-                    stock: 0,
-                    variants: [
-                        {
-                            selected_variant: "name",
-                            name: "",
-                            price: 0,
-                            stock: 0,
-                            size: "",
-                            color: "",
-                            gender: "",
-                        }
-                    ]
+                    name: "", category: 1, hasVariants: hasVariants, description: "", price: 0, stock: 0, variants: [{
+                        selected_variant: "name", name: "", price: 0, stock: 0, size: "", color: "", gender: "",
+                    }]
                 }}
                 validationSchema={validationSchema}
                 onSubmit={async values => {
@@ -125,8 +101,7 @@ export default function AddProduct() {
                     history.push('/products')
                 }}
             >
-                {({values, touched, errors, handleChange, handleBlur, isValid}) => (
-                    <Form noValidate autoComplete="off">
+                {({values, touched, errors, handleChange, handleBlur, isValid}) => (<Form noValidate autoComplete="off">
                         <Box
                             mt={2}
                             display={'flex'}
@@ -139,11 +114,7 @@ export default function AddProduct() {
                                 disabled={loading}
                                 startIcon={<SaveIcon/>}
                             >
-                                {loading ?
-                                    'Loading'
-                                    :
-                                    'Save'
-                                }
+                                {loading ? 'Loading' : 'Save'}
                             </Button>
                         </Box>
                         <Grid pt={2} pb={8} sx={{flexGrow: 1, flexWrap: 1}}>
@@ -152,9 +123,7 @@ export default function AddProduct() {
 
                                     <Card variant="outlined">
                                         <img src={photoURL} alt={"product image"} style={{
-                                            height: 200,
-                                            width: "100%",
-                                            objectFit: "cover"
+                                            height: 200, width: "100%", objectFit: "cover"
                                         }}/>
                                         <Box mt={"-20px"} pl={1}>
                                             <label htmlFor="icon-button-file">
@@ -220,8 +189,7 @@ export default function AddProduct() {
 
                                                     >
                                                         {category.map((cat, index) => (
-                                                            <MenuItem value={cat.id}>{cat.name}</MenuItem>
-                                                        ))}
+                                                            <MenuItem value={cat.id}>{cat.name}</MenuItem>))}
                                                     </Select>
                                                 </FormControl>
                                             </Grid>
@@ -242,35 +210,28 @@ export default function AddProduct() {
                                             <Grid m={1} xs={10}>
                                                 <FormControlLabel
                                                     value="start"
-                                                    control={
-                                                        <Switch
-                                                            aria-label={"switch"}
-                                                            value={hasVariants}
-                                                            color="primary"
-                                                            onChange={handleVariantChange}
-                                                        />
-                                                    }
+                                                    control={<Switch
+                                                        aria-label={"switch"}
+                                                        value={hasVariants}
+                                                        color="primary"
+                                                        onChange={handleVariantChange}
+                                                    />}
                                                     label="Has Variants"
                                                     labelPlacement="has_variants"
                                                 />
 
                                             </Grid>
                                             <Grid m={1}>
-                                                {hasVariants ? (
-                                                    <></>
-                                                ) : (
-                                                    <>
+                                                {hasVariants ? (<></>) : (<>
                                                         <NoVariantsComponent values={values} onChange={handleChange}
                                                                              touched={touched} errors={errors}/>
 
-                                                    </>
-                                                )}
+                                                    </>)}
                                             </Grid>
                                         </Grid>
                                     </Card>
                                 </Grid>
-                                {hasVariants ? (
-                                    <>
+                                {hasVariants ? (<>
                                         <Grid item xs={6}>
                                             <Grid>
                                                 <Card variant="outlined">
@@ -310,8 +271,7 @@ export default function AddProduct() {
                                             </Grid>
 
                                             <FieldArray name="variants">
-                                                {({push, remove}) => (
-                                                    <>
+                                                {({push, remove}) => (<>
                                                         {values.variants.map((vari, index) => {
                                                             const name = `variants[${index}].name`;
                                                             const touchedName = getIn(touched, name);
@@ -338,63 +298,54 @@ export default function AddProduct() {
                                                             const errorPrice = getIn(errors, price);
 
                                                             vari.selected_variant = variantType;
-                                                            return (
-                                                                <VariantComponent key={index}
-                                                                                  index={index}
-                                                                                  onClick={() => remove(index)}
-                                                                                  variantType={variantType}
-                                                                                  name={name}
-                                                                                  vari={vari}
-                                                                                  touchedName={touchedName}
-                                                                                  errorName={errorName}
-                                                                                  onChange={handleChange}
-                                                                                  onBlur={handleBlur}
-                                                                                  value={sizeSelected}
-                                                                                  onChange1={handleSizeChange}
-                                                                                  name1={price}
-                                                                                  touchedPrice={touchedPrice}
-                                                                                  errorPrice={errorPrice}
-                                                                                  name2={stock}
-                                                                                  touchedStock={touchedStock}
-                                                                                  errorStock={errorStock}
-                                                                                  size={size}
-                                                                                  touchedSize={touchedSize}
-                                                                                  errorSize={errorSize}
-                                                                                  color={color}
-                                                                                  touchedColor={touchedColor}
-                                                                                  errorColor={errorColor}
-                                                                                  gender={gender}
-                                                                                  touchedGender={touchedGender}
-                                                                                  errorGender={errorGender}
-                                                                />
-                                                            );
+                                                            return (<VariantComponent key={index}
+                                                                                      index={index}
+                                                                                      onClick={() => remove(index)}
+                                                                                      variantType={variantType}
+                                                                                      name={name}
+                                                                                      vari={vari}
+                                                                                      touchedName={touchedName}
+                                                                                      errorName={errorName}
+                                                                                      onChange={handleChange}
+                                                                                      onBlur={handleBlur}
+                                                                                      value={sizeSelected}
+                                                                                      onChange1={handleSizeChange}
+                                                                                      name1={price}
+                                                                                      touchedPrice={touchedPrice}
+                                                                                      errorPrice={errorPrice}
+                                                                                      name2={stock}
+                                                                                      touchedStock={touchedStock}
+                                                                                      errorStock={errorStock}
+                                                                                      size={size}
+                                                                                      touchedSize={touchedSize}
+                                                                                      errorSize={errorSize}
+                                                                                      color={color}
+                                                                                      touchedColor={touchedColor}
+                                                                                      errorColor={errorColor}
+                                                                                      gender={gender}
+                                                                                      touchedGender={touchedGender}
+                                                                                      errorGender={errorGender}
+                                                                />);
                                                         })}
-                                                        <AddVariantComponent onClick={() =>
-                                                            push({
-                                                                name: "",
-                                                                price: 0,
-                                                                stock: 0,
-                                                                size: "",
-                                                                color: "",
-                                                                gender: ""
-                                                            })}/>
+                                                        <AddVariantComponent onClick={() => push({
+                                                            name: "",
+                                                            price: 0,
+                                                            stock: 0,
+                                                            size: "",
+                                                            color: "",
+                                                            gender: ""
+                                                        })}/>
                                                     </>
 
                                                 )}
                                             </FieldArray>
 
                                         </Grid>
-                                    </>
-                                ) : (
-                                    <></>
-                                )
-                                }
+                                    </>) : (<></>)}
 
                             </Grid>
                         </Grid>
-                    </Form>
-                )}
+                    </Form>)}
             </Formik>
-        </Grid>
-    );
+        </Grid>);
 }
