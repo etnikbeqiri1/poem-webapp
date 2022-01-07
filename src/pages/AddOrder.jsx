@@ -1,50 +1,63 @@
 import {
-    alpha,
-    Autocomplete, Avatar,
+    Autocomplete,
+    Avatar,
     Button,
-    Card, CardContent, CardHeader, Chip,
+    Card,
+    CardContent,
+    CardHeader,
+    Chip,
     FormControl,
-    FormControlLabel, IconButton,
-    InputLabel, ListItem, ListItemIcon,
+    InputLabel,
     MenuItem,
     Select,
-    Switch,
-    TextField, Toolbar, Tooltip,
+    TextField,
 } from "@mui/material";
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import * as React from "react";
 import {useEffect, useState} from "react";
-import Typography from "@mui/material/Typography";
-import {getCategories} from "../helpers/requests/category";
 import SaveIcon from '@mui/icons-material/Save';
 import {toast} from "react-toastify";
 import * as yup from "yup";
-import {addProduct, getProducts, getProductsByName} from "../helpers/requests/product";
-import {FieldArray, Form, Formik, getIn} from "formik";
-import VariantComponent from "../components/VariantComponent/VariantComponent";
-import AddVariantComponent from "../components/AddVariantComponent/AddVariantComponent";
+import {getProducts, getProductsByName} from "../helpers/requests/product";
+import { Form, Formik} from "formik";
 import NoVariantsComponent from "../components/NoVariantsComponent/NoVariantsComponent";
-import firebase from "firebase";
-import {LoadingButton} from "@mui/lab";
 import {useHistory} from "react-router-dom";
-import DeleteIcon from '@mui/icons-material/Delete';
-import match from "autosuggest-highlight/match";
-import parse from "autosuggest-highlight/parse";
 import PropTypes from "prop-types";
-import * as api_help from "../helpers/requests/product";
-import {addOrder, getOrdersByName} from "../helpers/requests/order";
+import {addOrder} from "../helpers/requests/order";
+
+const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
 const validationSchema = yup.object({
-    name: yup
-        .string("Enter your product name")
-        .min(2, "Product name should be at least 2 characters in length!")
-        .max(42, "Product name should be less than 42 characters in length!")
-        .required("Product name is required!"),
-    description: yup
-        .string("Enter description for the product")
-        .min(2, "Product description should be at least 2 characters in length!")
-        .max(422, "Product description should be less than 422 characters in length!"),
+    full_name: yup
+        .string("Enter consumer full name")
+        .min(2, "Full name should be at least 2 characters in length!")
+        .max(60, "Full name should be less than 60 characters in length!")
+        .required("Full name is required!"),
+    street: yup
+        .string("Enter consumer street name")
+        .min(2, "Street name should be at least 2 characters in length!")
+        .max(60, "Street name should be less than 60 characters in length!")
+        .required("Street name is required!"),
+    street_2: yup
+        .string("Enter consumer street name")
+        .min(2, "Street name should be at least 2 characters in length!")
+        .max(60, "Street name should be less than 60 characters in length!"),
+    phone: yup
+        .string()
+        .matches(phoneRegExp, 'Phone number is not valid')
+        .required("Phone Number is required"),
+    phone_2: yup
+        .string()
+        .matches(phoneRegExp, 'Phone number is not valid'),
+    city: yup
+        .string("Enter consumer city name")
+        .min(2, "City name should be at least 2 characters in length!")
+        .max(42, "City name should be less than 42 characters in length!")
+        .required("City name is required!"),
+    zip: yup
+        .number("Enter consumer zip code")
+        .required("Zip is required!"),
 }).defined();
 
 
@@ -65,7 +78,7 @@ function OrderComponent(props) {
         props.onPriceChange(((props.vari?.variants[findIndex(selectedVariant)]?.price ?? props.vari.price) * props.vari.items),selectedVariant)
     }, [props.vari.items, selectedVariant])
 
-    return <Card style={{marginTop: 5}} variant={"outlined"}>
+    return <Card key={2} style={{marginTop: 5}} variant={"outlined"}>
         <CardHeader avatar={<Avatar src={props.vari.photo}/>} title={props.vari.name} subheader={props.vari.description}
                     action={
                         <Chip
@@ -109,60 +122,39 @@ function OrderComponent(props) {
 }
 
 OrderComponent.propTypes = {vari: PropTypes.any, onChange: PropTypes.any, onPriceChange: PropTypes.any};
-export default function AddOrder() {
 
-    const [hasVariants, setHasVariants] = useState(true);
+
+export default function AddOrder() {
     const [products, setProducts] = React.useState([]);
     const [countryID, setCountryID] = React.useState("Kosovo");
-    const [variantType, setVariantType] = React.useState("name");
-    const [sizeSelected, setSizeSelected] = React.useState("s");
     const [loading, setLoading] = React.useState(false);
     const [selectedProducts, setSelectedProducts] = React.useState([]);
-    const [price, setPrice] = React.useState(0);
-
-
     let history = useHistory();
 
-    useEffect(() => {
-        console.log(selectedProducts)
-    }, [selectedProducts])
-
-    const handleVariantChange = (event) => {
-        setHasVariants(event.target.checked);
-    };
     const handleCategoryChange = (event) => {
         setCountryID(event.target.value);
     };
-    const handleSizeChange = (event) => {
-        setSizeSelected(event.target.value);
-    };
 
-    const [searchWord, setSearchWord] = useState("");
     useEffect(async () => {
-        console.log(searchWord);
-        let data = {
-            "name": searchWord
-        }
-        let res = await getProductsByName(data);
+        let res = await getProducts();
         setProducts(res.data)
-    }, [searchWord])
+    }, [])
 
     return (
         <Grid>
             <Formik
                 initialValues={{
                     statusName: "ShopTestName",
-                    full_name : "street 324242",
-                    street : "street 324242",
-                    street_2 : "apt 4aE",
-                    phone : "049125345",
-                    phone_2 : "04534345",
-                    city : "podujeve",
-                    zip : "10010",
-                    product_with_variant: 1,
+                    full_name : "",
+                    street : "",
+                    street_2 : "",
+                    phone : "",
+                    phone_2 : "",
+                    city : "",
+                    zip : "",
                     products: []
                 }}
-                // validationSchema={validationSchema}
+                validationSchema={validationSchema}
                 onSubmit={async values => {
                     setLoading(true);
                     values.country = countryID;
@@ -174,12 +166,15 @@ export default function AddOrder() {
                             items: parseInt(item.items),
                         };
                     });
-                    let res = await addOrder(values)
-                    // console.log({values});
-                    setLoading(false);
-                    toast(res.info.message)
-                    // console.log("onSubmit", JSON.stringify(res.data, null, 2));
-                    history.push('/orders')
+                    if(values.products.length < 1){
+                        toast("Please add at least one product")
+                        setLoading(false);
+                    }else{
+                        let res = await addOrder(values)
+                        setLoading(false);
+                        toast(res.info.message)
+                        history.push('/orders')
+                    }
                 }}
             >
                 {({values, touched, errors, handleChange, handleBlur, isValid}) => (
@@ -283,10 +278,10 @@ export default function AddOrder() {
                                                     color={'primary'}
                                                     fullWidth
                                                     name={"phone2"}
-                                                    value={values.phone2}
+                                                    value={values.phone_2}
                                                     onChange={handleChange}
-                                                    error={touched.phone2 && Boolean(errors.phone2)}
-                                                    helperText={touched.phone2 && errors.phone2}
+                                                    error={touched.phone_2 && Boolean(errors.phone_2)}
+                                                    helperText={touched.phone_2 && errors.phone_2}
                                                 />
                                             </Grid>
                                             <Grid m={1} xs={12}>
@@ -301,6 +296,20 @@ export default function AddOrder() {
                                                     onChange={handleChange}
                                                     error={touched.city && Boolean(errors.city)}
                                                     helperText={touched.city && errors.city}
+                                                />
+                                            </Grid>
+                                            <Grid m={1} xs={12}>
+                                                <TextField
+                                                    id="name"
+                                                    label="Zip Code"
+                                                    color={'primary'}
+                                                    fullWidth
+                                                    required
+                                                    name={"zip"}
+                                                    value={values.zip}
+                                                    onChange={handleChange}
+                                                    error={touched.zip && Boolean(errors.zip)}
+                                                    helperText={touched.zip && errors.zip}
                                                 />
                                             </Grid>
 
@@ -323,24 +332,9 @@ export default function AddOrder() {
                                                     </Select>
                                                 </FormControl>
                                             </Grid>
-
-
-                                            <Grid m={1}>
-                                                {hasVariants ? (
-                                                    <></>
-                                                ) : (
-                                                    <>
-                                                        <NoVariantsComponent values={values} onChange={handleChange}
-                                                                             touched={touched} errors={errors}/>
-
-                                                    </>
-                                                )}
-                                            </Grid>
                                         </Grid>
                                     </Card>
                                 </Grid>
-                                {hasVariants ? (
-                                    <>
                                         <Grid item xs={6}>
                                             <Grid>
                                                 <Card variant="outlined">
@@ -391,14 +385,7 @@ export default function AddOrder() {
                                             <Card style={{marginTop: 5}} variant={"outlined"}>
                                                 <CardHeader title={"Total"} action={selectedProducts.reduce((a, b) => a + b.priceNow, 0) + " €"}/>
                                             </Card>
-
                                         </Grid>
-                                    </>
-                                ) : (
-                                    <></>
-                                )
-                                }
-
                             </Grid>
                         </Grid>
                     </Form>
