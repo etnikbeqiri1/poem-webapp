@@ -33,7 +33,7 @@ import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
 import PropTypes from "prop-types";
 import * as api_help from "../helpers/requests/product";
-import {getOrdersByName} from "../helpers/requests/order";
+import {addOrder, getOrdersByName} from "../helpers/requests/order";
 
 const validationSchema = yup.object({
     name: yup
@@ -62,14 +62,16 @@ function OrderComponent(props) {
     }
 
     useEffect(() => {
-        props.onPriceChange((props.vari?.variants[findIndex(selectedVariant)]?.price ?? props.vari.price) * props.vari.items)
+        props.onPriceChange(((props.vari?.variants[findIndex(selectedVariant)]?.price ?? props.vari.price) * props.vari.items),selectedVariant)
     }, [props.vari.items, selectedVariant])
 
     return <Card style={{marginTop: 5}} variant={"outlined"}>
         <CardHeader avatar={<Avatar src={props.vari.photo}/>} title={props.vari.name} subheader={props.vari.description}
-                    action={<Chip
+                    action={
+                        <Chip
                         label={((props.vari?.variants[findIndex(selectedVariant)]?.price ?? props.vari.price) * props.vari.items).toFixed(2) + " €"}
-                        variant={"outlined"} color="primary"/>
+                        variant={"outlined"}
+                        color="primary"/>
                     }/>
         <CardContent>
             {props.vari.hasVariants === 1 && <FormControl style={{marginBottom: 8}} fullWidth>
@@ -149,24 +151,35 @@ export default function AddOrder() {
         <Grid>
             <Formik
                 initialValues={{
-                    name: "",
-                    category: 1,
-                    hasVariants: hasVariants,
-                    description: "",
-                    price: 0,
-                    stock: 0,
+                    statusName: "ShopTestName",
+                    full_name : "street 324242",
+                    street : "street 324242",
+                    street_2 : "apt 4aE",
+                    phone : "049125345",
+                    phone_2 : "04534345",
+                    city : "podujeve",
+                    zip : "10010",
+                    product_with_variant: 1,
                     products: []
                 }}
-                validationSchema={validationSchema}
+                // validationSchema={validationSchema}
                 onSubmit={async values => {
                     setLoading(true);
-                    values.category = countryID;
-                    values.hasVariants = hasVariants;
-                    let res = await addProduct(values)
+                    values.country = countryID;
+                    values.products = selectedProducts.map((item, index) => {
+                        return {
+                            product_id: item.id,
+                            hasVariant: item.hasVariants,
+                            variant_id: item.selectedVariantNow,
+                            items: parseInt(item.items),
+                        };
+                    });
+                    let res = await addOrder(values)
+                    // console.log({values});
                     setLoading(false);
                     toast(res.info.message)
                     // console.log("onSubmit", JSON.stringify(res.data, null, 2));
-                    history.push('/products')
+                    history.push('/orders')
                 }}
             >
                 {({values, touched, errors, handleChange, handleBlur, isValid}) => (
@@ -269,11 +282,11 @@ export default function AddOrder() {
                                                     label="Phone 2"
                                                     color={'primary'}
                                                     fullWidth
-                                                    name={"phone"}
-                                                    value={values.phone}
+                                                    name={"phone2"}
+                                                    value={values.phone2}
                                                     onChange={handleChange}
-                                                    error={touched.phone && Boolean(errors.phone)}
-                                                    helperText={touched.phone && errors.phone}
+                                                    error={touched.phone2 && Boolean(errors.phone2)}
+                                                    helperText={touched.phone2 && errors.phone2}
                                                 />
                                             </Grid>
                                             <Grid m={1} xs={12}>
@@ -351,7 +364,7 @@ export default function AddOrder() {
                                                                     setSelectedProducts(newValue.map((item, index) => {
                                                                         return {...item, items: 1};
                                                                     }));
-                                                                    values.products = newValue;
+                                                                    // values.products = newValue;
                                                                 }}
                                                             />
                                                         </Grid>
@@ -366,16 +379,17 @@ export default function AddOrder() {
                                                         temp[index].items = items;
                                                         setSelectedProducts(temp);
                                                     }}
-                                                                    onPriceChange={(newPrice) => {
+                                                                    onPriceChange={(newPrice,variantID) => {
                                                                         let temp = [...selectedProducts];
                                                                         temp[index].priceNow = newPrice;
+                                                                        temp[index].selectedVariantNow = variantID;
                                                                         setSelectedProducts(temp);
                                                                     }}
                                                     />
                                                 );
                                             })}
                                             <Card style={{marginTop: 5}} variant={"outlined"}>
-                                                <CardHeader title={"Total"} action={selectedProducts.reduce((a, b) => a + b.priceNow, 0)}/>
+                                                <CardHeader title={"Total"} action={selectedProducts.reduce((a, b) => a + b.priceNow, 0) + " €"}/>
                                             </Card>
 
                                         </Grid>

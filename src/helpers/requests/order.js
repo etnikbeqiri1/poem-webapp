@@ -9,6 +9,10 @@ export async function getOrdersByName(data){
      return await post('http://localhost:8000/api/user/orders/name',data);
 }
 
+export async function addOrder(data){
+     return await post('http://localhost:8000/api/user/order/new',data);
+}
+
 
 
 
