@@ -272,15 +272,6 @@ const Sidebar = () => {
                   <Text clicked={click}>Home</Text>
                 </Item>
                 <Item
-                  onClick={() => setClick(false)}
-                  activeClassName="active"
-                  to="/team"
-                >
-                  <img src={Team} alt="Team" />
-                  <Text clicked={click}>Team</Text>
-                </Item>
-
-                <Item
                     onClick={() => setClick(false)}
                     activeClassName="active"
                     to="/orders"
@@ -298,9 +289,6 @@ const Sidebar = () => {
                   <Text clicked={click}>Products</Text>
                 </Item>
 
-
-
-
                 <Item
                     onClick={() => setClick(false)}
                     activeClassName="active"
@@ -309,30 +297,6 @@ const Sidebar = () => {
                   <img src={ProfileUserIcon} alt="Profile" />
                   <Text clicked={click}>Profile</Text>
                 </Item>
-                {/*<Item*/}
-                {/*  onClick={() => setClick(false)}*/}
-                {/*  activeClassName="active"*/}
-                {/*  to="/calender"*/}
-                {/*>*/}
-                {/*  <img src={Calender} alt="Calender" />*/}
-                {/*  <Text clicked={click}>Calender</Text>*/}
-                {/*</Item>*/}
-                {/*<Item*/}
-                {/*  onClick={() => setClick(false)}*/}
-                {/*  activeClassName="active"*/}
-                {/*  to="/documents"*/}
-                {/*>*/}
-                {/*  <img src={Documents} alt="Documents" />*/}
-                {/*  <Text clicked={click}>Documents</Text>*/}
-                {/*</Item>*/}
-                {/*<Item*/}
-                {/*  onClick={() => setClick(false)}*/}
-                {/*  activeClassName="active"*/}
-                {/*  to="/projects"*/}
-                {/*>*/}
-                {/*  <img src={Projects} alt="Projects" />*/}
-                {/*  <Text clicked={click}>Projects</Text>*/}
-                {/*</Item>*/}
               </SlickBar>
 
               <Profile clicked={profileClick}>

@@ -63,7 +63,6 @@ const App = () => {
                 {auth.user && (
                     <Sidebar/>
                 )}
-
                 <Pages>
                     <Layout>
                         <Switch>
@@ -99,12 +98,12 @@ const App = () => {
                             <Route path='/login'>
                                 <Login/>
                             </Route>
-                            <Route path='/forgot-password'>
-                                <ForgotPassword/>
-                            </Route>
-                            <Route path='/reset-password'>
-                                <ResetPassword/>
-                            </Route>
+                            {/*<Route path='/forgot-password'>*/}
+                            {/*    <ForgotPassword/>*/}
+                            {/*</Route>*/}
+                            {/*<Route path='/reset-password'>*/}
+                            {/*    <ResetPassword/>*/}
+                            {/*</Route>*/}
                             <Route>
                                 <NotFound/>
                             </Route>
