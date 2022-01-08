@@ -8,7 +8,7 @@ const Layout = ({ children }) => {
   return (
     <>
       <LayoutGrid>
-        <Nav />
+        {/*<Nav />*/}
         {children}
       </LayoutGrid>
     </>
