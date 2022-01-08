@@ -40,14 +40,21 @@ export const AuthProvider = ({ children }) => {
       });
   };
 
-  const signup = (email, password) => {
+  const signup = (email, password, name) => {
+    let namee = name.split(' ');
     return firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then((response) => {
-        setUser(response.user);
-        return response.user;
-      });
+        .auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then((response) => {
+          setUser(response.user);
+          response.user.updateProfile({
+            displayName : name,
+            photoURL : 'https://eu.ui-avatars.com/api/?background=8a50e5&color=fff&bold=true&size=256&name='+namee[0]+"+"+namee[1]
+          }).then(r => {
+            console.log(r);
+          })
+          return response.user;
+        });
   };
 
   const logout = () => {
