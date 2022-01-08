@@ -1,152 +1,110 @@
-import React, { useEffect, useRef } from 'react';
-import { useTheme } from 'styled-components';
-import { useForm } from 'react-hook-form';
+import React from 'react';
 import * as Yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { toast } from 'react-toastify';
-import { useHistory, Link } from 'react-router-dom';
+import {toast} from 'react-toastify';
+import {useHistory, Link} from 'react-router-dom';
+import {useAuth} from '../../hooks/useAuth';
+import {Avatar, Container, CssBaseline, TextField} from "@mui/material";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Button from "../Button/Button";
+import Grid from "../Layout/Grid";
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import {useFormik} from "formik";
 
-import H1 from '../Typography/H1';
-import Text from '../Typography/Text';
-import FormContainer from './FormContainer';
-import { ReCaptcha } from './ReCaptcha';
-import { useAuth } from '../../hooks/useAuth';
-import Form from './Form';
 
 const validationSchema = Yup.object().shape({
-  email: Yup.string()
-    .required('Email is required')
-    .matches(
-      /^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/,
-      'Invalid email'
-    ),
-  password: Yup.string().required('Password is required'),
-  // captchaToken: Yup.string().required('Verify you are a human'),
+    email: Yup.string()
+        .required('Email is required')
+        .matches(/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/, 'Invalid email'),
+    password: Yup.string().required('Password is required'),
 });
 
 const Login = () => {
-  const {
-    register,
-    handleSubmit,
-    errors,
-    reset,
-    setValue,
-    clearErrors,
-    watch,
-  } = useForm({
-    resolver: yupResolver(validationSchema),
-  });
+    const auth = useAuth();
 
-  const auth = useAuth();
+    const history = useHistory();
 
-  const theme = useTheme();
+    const formik = useFormik({
+        initialValues: {
+            "email": "", "password": ""
+        }, validationSchema: validationSchema, onSubmit: async (values) => {
+            try {
+                await auth.login(values.email, values.password);
+                toast('Welcome! 👋');
+                history.push('/');
+            } catch {
+                toast.error('Error logging in.');
+            }
+        },
+    });
 
-  const history = useHistory();
-
-  const submitRef = useRef(null);
-
-  const emailRef = useRef(null);
-
-  const passwordRef = useRef(null);
-
-  // Manually register captchaToken
-  useEffect(() => {
-    register({ name: 'captchaToken' });
-    document.body.style.backgroundColor = "black"
-
-    return () => {
-      document.body.style.backgroundColor = null
-    }
-  }, []);
-
-  // Watch for changes to captcha
-  const watchCaptcha = watch('captchaToken');
-
-  // Set focus on email
-  useEffect(() => {
-    emailRef.current.focus();
-  }, []);
-
-  const onSubmit = async (data) => {
-    try {
-      await auth.login(data.email, data.password);
-      toast('Welcome! 👋');
-      reset();
-      history.push('/');
-    } catch {
-      toast.error('Error logging in.');
-    }
-  };
-
-  const onVerifyCaptcha = (token) => {
-    setValue('captchaToken', token);
-    clearErrors(['captchaToken']);
-    submitRef.current.focus();
-  };
-
-  return (
-    <FormContainer>
-      <H1 textAlign='center' margin='0 0 2rem 0'>
-        Login
-      </H1>
-      <Text margin='0 0 1rem 0' textAlign='center'>
-        Enter your email and password.
-      </Text>
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <input
-          type='email'
-          name='email'
-          placeholder='Email'
-          autoComplete='off'
-          ref={(e) => {
-            register(e);
-            emailRef.current = e;
-          }}
-        />
-        {errors.email && (
-          <Text
-            color='#F6406C'
-            size='small'
-            margin='0 0 1rem 0'
-            textAlign='center'
-          >
-            {errors.email.message}
-          </Text>
-        )}
-        <input
-          type='password'
-          name='password'
-          placeholder='Password'
-          ref={(e) => {
-            register(e);
-            passwordRef.current = e;
-          }}
-        />
-        {errors.password && (
-          <Text
-            color='#F6406C'
-            size='small'
-            margin='0 0 1rem 0'
-            textAlign='center'
-          >
-            {errors.password.message}
-          </Text>
-        )}
-        {errors.captchaToken && (
-          <Text
-            color='#F6406C'
-            size='small'
-            margin='0 0 1rem 0'
-            textAlign='center'
-          >
-            {errors.captchaToken.message}
-          </Text>
-        )}
-        <input type='submit' value='Submit' ref={submitRef} />
-      </Form>
-      <Link to='/forgot-password'>Forgot password?</Link>
-    </FormContainer>
-  );
+    return (<Container component="main" maxWidth="xs">
+            <CssBaseline/>
+            <Box
+                sx={{
+                    marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center',
+                }}
+            >
+                <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
+                    <LockOutlinedIcon/>
+                </Avatar>
+                <Typography component="h1" variant="h5">
+                    Sign in
+                </Typography>
+                <Box sx={{mt: 1}}>
+                    <form onSubmit={formik.handleSubmit}>
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="email"
+                            label="Email Address"
+                            name="email"
+                            autoComplete="email"
+                            autoFocus
+                            color={"primary"}
+                            value={formik.values.email}
+                            onChange={formik.handleChange}
+                            error={formik.touched.email && Boolean(formik.errors.email)}
+                            helperText={formik.touched.email && formik.errors.email}
+                        />
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="password"
+                            label="Password"
+                            type="password"
+                            id="password"
+                            autoComplete="current-password"
+                            color={"primary"}
+                            value={formik.values.password}
+                            onChange={formik.handleChange}
+                            error={formik.touched.password && Boolean(formik.errors.password)}
+                            helperText={formik.touched.password && formik.errors.password}
+                        />
+                        <Button
+                            type="submit"
+                            onClick={formik.handleSubmit}
+                            fullWidth
+                            variant="contained"
+                            sx={{mt: 3, mb: 2}}
+                        >
+                            Sign In
+                        </Button>
+                        <Grid container>
+                            <Grid item>
+                                <Link onClick={() => {
+                                    history.push('/signup');
+                                }} variant="body2">
+                                    {"Don't have an account? Sign Up"}
+                                </Link>
+                            </Grid>
+                        </Grid>
+                    </form>
+                </Box>
+            </Box>
+        </Container>);
 };
 
 export default Login;
